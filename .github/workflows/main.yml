@@ -6,7 +6,7 @@ on:
       role_ids:
         description: "List of RoleId's to be migrated"
         required: true
-        default: []
+        default: ""
 
 jobs:
   execute-script:
