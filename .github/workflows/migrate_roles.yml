@@ -1,0 +1,41 @@
+name: Roles Migration script
+
+on:
+  workflow_dispatch:
+    inputs:
+      role_ids:
+        description: "List of RoleId's to be migrated"
+        required: true
+      target_vault_id:
+        description: "Vault ID of the Target Env"
+        required: true
+      source_env_token:
+        description: "Access token of the Source Env"
+        required: true
+      target_env_token:
+        description: "Access token of the Target Env"
+        required: true
+
+jobs:
+  execute-script:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run Python script
+        env:
+          ROLE_IDS: ${{ github.event.inputs.role_ids }}
+          TARGET_VAULT_ID: ${{ github.event.inputs.target_vault_id }}
+          SOURCE_ENV_AUTH: ${{ github.event.inputs.source_env_token }}
+          TARGET_ENV_AUTH: ${{ github.event.inputs.target_env_token }}
+        run: python ../../migrate_roles.py
