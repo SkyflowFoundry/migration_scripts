@@ -30,7 +30,7 @@ jobs:
           python-version: "3.x"
 
       - name: Install dependencies
-        run: pip install requests ast
+        run: pip install requests
 
       - name: Run Python script
         env:
