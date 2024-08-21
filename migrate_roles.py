@@ -95,15 +95,15 @@ def transform_role_payload(source_resource):
 
 def main(role_ids=ROLE_IDS):
     try:
-        print("RoleIds", role_ids)
+        print("RoleIds", role_ids, type(role_ids))
         print("SourceAccId", SOURCE_ENV_ACCOUNT_ID)
         print("TargetAccId", TARGET_ENV_ACCOUNT_ID)
         print("TargetVaultId", TARGET_VAULT_ID)
         role_ids = role_ids if role_ids else ast.literal_eval(ROLE_IDS)
-        print("RoleIds after parsing", role_ids)
+        print("RoleIds after parsing", role_ids, type(role_ids))
         roles_created = []
         for index, role_id in enumerate(role_ids):
-            print('RoleID', role_id)
+            print('RoleID', role_id, type(role_id))
             print(f"-- Working on {index + 1} ROLE --")
             role_info = get_role(role_id)
             if(role_info["role"]["definition"]["name"] in SYSTEM_ROLES):
