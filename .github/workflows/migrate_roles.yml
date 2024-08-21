@@ -38,4 +38,6 @@ jobs:
           TARGET_VAULT_ID: ${{ github.event.inputs.target_vault_id }}
           SOURCE_ENV_AUTH: ${{ github.event.inputs.source_env_token }}
           TARGET_ENV_AUTH: ${{ github.event.inputs.target_env_token }}
+          SOURCE_ACCOUNT_ID: ${{ vars.SOURCE_ACCOUNT_ID }}
+          TARGET_ACCOUNT_ID: ${{ vars.TARGET_ACCOUNT_ID }}
         run: python3 migrate_roles.py

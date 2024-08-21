@@ -103,6 +103,7 @@ def main(role_ids=ROLE_IDS):
         print("RoleIds after parsing", role_ids)
         roles_created = []
         for index, role_id in enumerate(role_ids):
+            print('RoleID', role_id)
             print(f"-- Working on {index + 1} ROLE --")
             role_info = get_role(role_id)
             if(role_info["role"]["definition"]["name"] in SYSTEM_ROLES):
