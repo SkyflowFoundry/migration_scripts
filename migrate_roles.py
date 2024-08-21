@@ -93,7 +93,7 @@ def transform_role_payload(source_resource):
     return transformed_resource
 
 
-def main(role_ids=ROLE_IDS):
+def main(role_ids=None):
     try:
         print("RoleIds", role_ids, type(role_ids))
         print("SourceAccId", SOURCE_ENV_ACCOUNT_ID)
