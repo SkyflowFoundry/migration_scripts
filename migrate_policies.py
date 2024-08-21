@@ -2,9 +2,9 @@ import os
 import ast
 import requests
 
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 
-load_dotenv()
+# load_dotenv()
 
 SOURCE_ENV_URL = "https://manage.skyflowapis-preview.com"
 TARGET_ENV_URL = "https://manage.skyflowapis.com"

@@ -2,9 +2,9 @@ import requests
 import os
 from migrate_serviceaccounts import main as migrate_service_accounts
 
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 
-load_dotenv()
+# load_dotenv()
 
 SOURCE_ENV_URL = "https://manage.skyflowapis-preview.com"
 
