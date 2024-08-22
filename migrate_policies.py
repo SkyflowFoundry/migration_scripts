@@ -2,36 +2,34 @@ import os
 import ast
 import requests
 
-# from dotenv import load_dotenv
-
-# load_dotenv()
-
-SOURCE_ENV_URL = "https://manage.skyflowapis-preview.com"
-TARGET_ENV_URL = "https://manage.skyflowapis.com"
+from dotenv import load_dotenv
+load_dotenv()
 
 POLICY_IDS = os.getenv("POLICY_IDS")
 TARGET_VAULT_ID = os.getenv("TARGET_VAULT_ID")
-SOURCE_ENV_ACCOUNT_ID = os.getenv("SOURCE_ENV_ACCOUNT_ID")
-TARGET_ENV_ACCOUNT_ID = os.getenv("TARGET_ENV_ACCOUNT_ID")
-SOURCE_ENV_AUTH = os.getenv("SOURCE_ENV_AUTH")
-TARGET_ENV_AUTH = os.getenv("TARGET_ENV_AUTH")
+SOURCE_VAULT_ACCOUNT_ID = os.getenv("SOURCE_VAULT_ACCOUNT_ID")
+TARGET_VAULT_ACCOUNT_ID = os.getenv("TARGET_VAULT_ACCOUNT_ID")
+SOURCE_VAULT_AUTH = os.getenv("SOURCE_VAULT_AUTH")
+TARGET_VAULT_AUTH = os.getenv("TARGET_VAULT_AUTH")
+SOURCE_VAULT_ENV_URL = os.getenv("SOURCE_VAULT_ENV_URL")
+TARGET_VAULT_ENV_URL = os.getenv("TARGET_VAULT_ENV_URL")
 
-SOURCE_ENV_HEADERS = {
-    "X-SKYFLOW-ACCOUNT-ID": SOURCE_ENV_ACCOUNT_ID,
-    "Authorization": f"Bearer {SOURCE_ENV_AUTH}",
+SOURCE_VAULT_HEADERS = {
+    "X-SKYFLOW-ACCOUNT-ID": SOURCE_VAULT_ACCOUNT_ID,
+    "Authorization": f"Bearer {SOURCE_VAULT_AUTH}",
     "Content-Type": "application/json",
 }
 
-TARGET_ENV_HEADERS = {
-    "X-SKYFLOW-ACCOUNT-ID": TARGET_ENV_ACCOUNT_ID,
-    "Authorization": f"Bearer {TARGET_ENV_AUTH}",
+TARGET_VAULT_HEADERS = {
+    "X-SKYFLOW-ACCOUNT-ID": TARGET_VAULT_ACCOUNT_ID,
+    "Authorization": f"Bearer {TARGET_VAULT_AUTH}",
     "Content-Type": "application/json",
 }
 
 
 def get_policy(policy_id):
     response = requests.get(
-        f"{SOURCE_ENV_URL}/v1/policies/{policy_id}", headers=SOURCE_ENV_HEADERS
+        f"{SOURCE_VAULT_ENV_URL}/v1/policies/{policy_id}", headers=SOURCE_VAULT_HEADERS
     )
     response.raise_for_status()
     return response.json()
@@ -39,7 +37,7 @@ def get_policy(policy_id):
 
 def create_policy(policy_data):
     response = requests.post(
-        f"{TARGET_ENV_URL}/v1/policies", json=policy_data, headers=TARGET_ENV_HEADERS
+        f"{TARGET_VAULT_ENV_URL}/v1/policies", json=policy_data, headers=TARGET_VAULT_HEADERS
     )
     response.raise_for_status()
     return response.json()
@@ -98,7 +96,7 @@ def transform_policy_payload(source_resource):
     return transformed_resource
 
 
-def main(policy_ids=POLICY_IDS):
+def main(policy_ids=None):
     try:
         policy_ids = policy_ids if policy_ids else ast.literal_eval(POLICY_IDS)
         policies_created = []
@@ -111,8 +109,10 @@ def main(policy_ids=POLICY_IDS):
         return policies_created
     except requests.exceptions.HTTPError as http_err:
         print(f'-- migrate_policies HTTP error: {http_err.response.content.decode()} --')
+        raise http_err
     except Exception as err:
         print(f"-- migrate_policies error: {err} --")
+        raise err
 
 
 if __name__ == "__main__":

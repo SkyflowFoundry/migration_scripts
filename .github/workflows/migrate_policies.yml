@@ -1,4 +1,4 @@
-name: Policies Migration script
+name: policies_migration
 
 on:
   workflow_dispatch:
@@ -7,13 +7,13 @@ on:
         description: "List of Policy ID's to be migrated"
         required: true
       target_vault_id:
-        description: "Vault ID of the Target Env"
+        description: "Target Vault ID"
         required: true
-      source_env_token:
-        description: "Access token of the Source Env"
+      source_vault_access_token:
+        description: "Access token of the Source Vault"
         required: true
-      target_env_token:
-        description: "Access token of the Target Env"
+      target_vault_access_token:
+        description: "Access token of the Target Vault"
         required: true
 
 jobs:
@@ -36,8 +36,10 @@ jobs:
         env:
           POLICY_IDS: ${{ github.event.inputs.policy_ids }}
           TARGET_VAULT_ID: ${{ github.event.inputs.target_vault_id }}
-          SOURCE_ENV_AUTH: ${{ github.event.inputs.source_env_token }}
-          TARGET_ENV_AUTH: ${{ github.event.inputs.target_env_token }}
-          SOURCE_ACCOUNT_ID: ${{ vars.SOURCE_ACCOUNT_ID }}
-          TARGET_ACCOUNT_ID: ${{ vars.TARGET_ACCOUNT_ID }}
+          SOURCE_VAULT_AUTH: ${{ github.event.inputs.source_vault_access_token }}
+          TARGET_VAULT_AUTH: ${{ github.event.inputs.target_vault_access_token }}
+          SOURCE_VAULT_ACCOUNT_ID: ${{ vars.SOURCE_VAULT_ACCOUNT_ID }}
+          TARGET_VAULT_ACCOUNT_ID: ${{ vars.TARGET_VAULT_ACCOUNT_ID }}
+          SOURCE_VAULT_ENV_URL: ${{ vars.SOURCE_VAULT_ENV_URL }}
+          TARGET_VAULT_ENV_URL: ${{ vars.TARGET_VAULT_ENV_URL }}
         run: python3 migrate_policies.py
