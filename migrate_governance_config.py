@@ -4,7 +4,7 @@ from migrate_service_accounts import main as migrate_service_accounts
 
 
 SOURCE_VAULT_ID = os.getenv("SOURCE_VAULT_ID")
-SOURCE_VAULT_ACCOUNT_ID = os.getenv("SOURCE_ACCOUNT_ID")
+SOURCE_VAULT_ACCOUNT_ID = os.getenv("SOURCE_VAULT_ACCOUNT_ID")
 SOURCE_VAULT_AUTH = os.getenv("SOURCE_VAULT_AUTH")
 SOURCE_VAULT_ENV_URL = os.getenv("SOURCE_VAULT_ENV_URL")
 
