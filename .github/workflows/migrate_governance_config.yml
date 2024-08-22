@@ -42,4 +42,4 @@ jobs:
           TARGET_VAULT_ACCOUNT_ID: ${{ vars.TARGET_VAULT_ACCOUNT_ID }}
           SOURCE_VAULT_ENV_URL: ${{ vars.SOURCE_VAULT_ENV_URL }}
           TARGET_VAULT_ENV_URL: ${{ vars.TARGET_VAULT_ENV_URL }}
-        run: python3 migrate_to_production.py
+        run: python3 migrate_governance_config.py
