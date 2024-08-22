@@ -2,8 +2,6 @@ import os
 import ast
 import requests
 
-from dotenv import load_dotenv
-load_dotenv()
 
 POLICY_IDS = os.getenv("POLICY_IDS")
 TARGET_VAULT_ID = os.getenv("TARGET_VAULT_ID")

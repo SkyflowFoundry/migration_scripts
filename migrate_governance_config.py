@@ -2,8 +2,6 @@ import requests
 import os
 from migrate_service_accounts import main as migrate_service_accounts
 
-from dotenv import load_dotenv
-load_dotenv()
 
 SOURCE_VAULT_ID = os.getenv("SOURCE_VAULT_ID")
 SOURCE_VAULT_ACCOUNT_ID = os.getenv("SOURCE_ACCOUNT_ID")

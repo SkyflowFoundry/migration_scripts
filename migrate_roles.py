@@ -3,8 +3,6 @@ import requests
 import os
 from migrate_policies import main as migrate_policies
 
-from dotenv import load_dotenv
-load_dotenv()
 
 SYSTEM_ROLES = ["VAULT_OWNER", "VAULT_EDITOR", "VAULT_VIEWER", "PIPELINE_MANAGER", "CONNECTION_MANAGER"]
 

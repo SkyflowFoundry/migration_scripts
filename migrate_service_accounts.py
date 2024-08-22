@@ -3,8 +3,6 @@ import ast
 import requests
 from migrate_roles import main as migrate_roles
 
-from dotenv import load_dotenv
-load_dotenv()
 
 SERVICE_ACCOUNT_IDS = os.getenv("SERVICE_ACCOUNT_IDS")
 TARGET_VAULT_ID = os.getenv("TARGET_VAULT_ID")
