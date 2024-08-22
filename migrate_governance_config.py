@@ -43,8 +43,10 @@ def main():
         )
     except requests.exceptions.HTTPError as http_err:
         print(f"-- migration HTTP error: {http_err.response.content.decode()} --")
+        exit(1)
     except Exception as err:
         print(f"-- migration other error: {err} --")
+        exit(1)
 
 
 if __name__ == "__main__":
