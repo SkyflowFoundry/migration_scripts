@@ -63,3 +63,7 @@ Ensure the following repository variables are set before running the workflows:
 ### Step 2: Run the Workflow
 
 To run the migration scripts, ensure that you provide the necessary input parameters and repository variables. Simply trigger the workflow with the correct inputs, and let the workflow do the magic to seamlessly migrate your Skyflow resources!
+
+### Step 3: Get your Credentials file (Applicable for SA/Vault Governance migration)
+
+- Re-Key the SA to get credentials from Skyflow Studio.

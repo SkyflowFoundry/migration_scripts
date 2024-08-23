@@ -100,6 +100,7 @@ def transform_role_payload(source_resource):
 
 def main(role_ids=None):
     try:
+        should_enable_custom_role_check = True if role_ids else False
         role_ids = role_ids if role_ids else ast.literal_eval(ROLE_IDS)
         roles_created = []
         for index, role_id in enumerate(role_ids):
@@ -111,11 +112,12 @@ def main(role_ids=None):
                 system_role = get_system_role(role_name)
                 roles_created.append({"ID": system_role["roles"][0]["ID"]})
             else:
-                print('-- checking if a role exists for the given vault --')
-                role_response = get_role_by_role_name(role_name)
-                if(len(role_response["roles"]) == 1):
-                    print("-- Found an existing CUSTOM_ROLE, using existing ROLE --")
-                    roles_created.append({"ID" : role_response["roles"][0]["ID"]})
+                if(should_enable_custom_role_check):
+                    print('-- checking if a role exists for the given vault --')
+                    role_response = get_role_by_role_name(role_name)
+                    if(len(role_response["roles"]) == 1):
+                        print("-- Found an existing CUSTOM_ROLE --")
+                        roles_created.append({"ID" : role_response["roles"][0]["ID"]})
                 else:
                     role_payload = transform_role_payload(role_info)
                     print("-- ROLE does not exist, working on ROLE creation --")
@@ -128,9 +130,10 @@ def main(role_ids=None):
                     policies_created = migrate_policies(policy_ids)
                     created_policy_ids = [policy["ID"] for policy in policies_created]
                     assign_policy_to_role(created_policy_ids, [new_role["ID"]])
-        print(f"-- ROLES Migration done --")        
+                    print(f"-- Migration done for ROLE: {role_name}. Source ROLE_ID: {role_id}, Target ROLE_ID: {new_role['ID']} --")        
         return roles_created
     except requests.exceptions.HTTPError as http_err:
+        print(f'-- Role creation failed for {role_id}. Role with name {role_name} already exists in target account. Please update this role name in your source account and try again. --')
         print(f'-- migrate_roles HTTP error: {http_err.response.content.decode()} --')
         raise http_err
     except Exception as err:

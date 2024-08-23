@@ -105,7 +105,7 @@ def main(service_accounts_ids=None):
             assign_roles_to_service_account(
                 created_role_ids, new_service_account["clientID"]
             )
-        print("-- SERVICE_ACCOUNTS Migration done --")
+            print(f"-- Migration done for SERVICE_ACCOUNT: {service_account_resource['serviceAccount']['name']}. Source SERVICE_ACCOUNT_ID: {service_account_id}, Target SERVICE_ACCOUNT_ID: {new_service_account['clientID']} --")
         return created_service_accounts
     except requests.exceptions.HTTPError as http_err:
         print(
