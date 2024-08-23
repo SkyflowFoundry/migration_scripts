@@ -66,4 +66,5 @@ To run the migration scripts, ensure that you provide the necessary input parame
 
 ### Step 3: Get your Credentials file (Applicable for SA/Vault Governance migration)
 
-- Re-Key the SA to get credentials from Skyflow Studio.
+- Re-Key the SA to get credentials from [Studio or API](https://docs.skyflow.com/rotate-service-account-keys/#prerequisites)
+- Secure service account credentials by storing them in designated secret stores with built-in security, and securely pass info to runtime applications.
