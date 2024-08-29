@@ -1,19 +1,25 @@
-name: policies_migration
+name: vault_schema_migration
 
 on:
   workflow_dispatch:
     inputs:
-      policy_ids:
-        description: "List of Policy ID's to be migrated"
+      source_vault_id:
+        description: "Source Vault ID"
         required: true
-      target_vault_id:
-        description: "Target Vault ID"
+      workspace_id:
+        description: "Workspace ID"
         required: true
+      vault_name:
+        description: "Name for the target vault. If not provided, source vault name will be used"
+        required: false
+      vault_description:
+        description: "Description for the target vault. If not provided, source vault description will be used"
+        required: false
       source_account_access_token:
-        description: "Access token of the Source Account"
+        description: "Access token of the Source account"
         required: true
       target_account_access_token:
-        description: "Access token of the Target Account"
+        description: "Access token of the Target account. Make sure to use a user generated access token from Studio."
         required: true
 
 jobs:
@@ -34,12 +40,14 @@ jobs:
 
       - name: Run Python script
         env:
-          POLICY_IDS: ${{ github.event.inputs.policy_ids }}
-          TARGET_VAULT_ID: ${{ github.event.inputs.target_vault_id }}
+          SOURCE_VAULT_ID: ${{ github.event.inputs.source_vault_id }}
+          WORKSPACE_ID: ${{ github.event.inputs.workspace_id }}
+          VAULT_NAME: ${{ github.event.inputs.vault_name }}
+          VAULT_DESCRIPTION: ${{ github.event.inputs.vault_description }}
           SOURCE_ACCOUNT_AUTH: ${{ github.event.inputs.source_account_access_token }}
           TARGET_ACCOUNT_AUTH: ${{ github.event.inputs.target_account_access_token }}
           SOURCE_ACCOUNT_ID: ${{ vars.SOURCE_ACCOUNT_ID }}
           TARGET_ACCOUNT_ID: ${{ vars.TARGET_ACCOUNT_ID }}
           SOURCE_ENV_URL: ${{ vars.SOURCE_ENV_URL }}
           TARGET_ENV_URL: ${{ vars.TARGET_ENV_URL }}
-        run: python3 migrate_policies.py
+        run: python3 migrate_governance_config.py

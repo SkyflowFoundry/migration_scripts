@@ -8,43 +8,43 @@ SYSTEM_ROLES = ["VAULT_OWNER", "VAULT_EDITOR", "VAULT_VIEWER", "PIPELINE_MANAGER
 
 ROLE_IDS = os.getenv("ROLE_IDS") 
 TARGET_VAULT_ID = os.getenv("TARGET_VAULT_ID")
-SOURCE_VAULT_ACCOUNT_ID = os.getenv("SOURCE_VAULT_ACCOUNT_ID")
-TARGET_VAULT_ACCOUNT_ID = os.getenv("TARGET_VAULT_ACCOUNT_ID")
-SOURCE_VAULT_AUTH = os.getenv("SOURCE_VAULT_AUTH")
-TARGET_VAULT_AUTH = os.getenv("TARGET_VAULT_AUTH")
-SOURCE_VAULT_ENV_URL = os.getenv("SOURCE_VAULT_ENV_URL")
-TARGET_VAULT_ENV_URL = os.getenv("TARGET_VAULT_ENV_URL")
+SOURCE_ACCOUNT_ID = os.getenv("SOURCE_ACCOUNT_ID")
+TARGET_ACCOUNT_ID = os.getenv("TARGET_ACCOUNT_ID")
+SOURCE_ACCOUNT_AUTH = os.getenv("SOURCE_ACCOUNT_AUTH")
+TARGET_ACCOUNT_AUTH = os.getenv("TARGET_ACCOUNT_AUTH")
+SOURCE_ENV_URL = os.getenv("SOURCE_ENV_URL")
+TARGET_ENV_URL = os.getenv("TARGET_ENV_URL")
 
-SOURCE_VAULT_HEADERS = {
-    "X-SKYFLOW-ACCOUNT-ID": SOURCE_VAULT_ACCOUNT_ID,
-    "Authorization": f"Bearer {SOURCE_VAULT_AUTH}",
+SOURCE_ACCOUNT_HEADERS = {
+    "X-SKYFLOW-ACCOUNT-ID": SOURCE_ACCOUNT_ID,
+    "Authorization": f"Bearer {SOURCE_ACCOUNT_AUTH}",
     "Content-Type": "application/json",
 }
 
-TARGET_VAULT_HEADERS = {
-    "X-SKYFLOW-ACCOUNT-ID": TARGET_VAULT_ACCOUNT_ID,
-    "Authorization": f"Bearer {TARGET_VAULT_AUTH}",
+TARGET_ACCOUNT_HEADERS = {
+    "X-SKYFLOW-ACCOUNT-ID": TARGET_ACCOUNT_ID,
+    "Authorization": f"Bearer {TARGET_ACCOUNT_AUTH}",
     "Content-Type": "application/json",
 }
 
 
 def get_role(role_id):
     response = requests.get(
-        f"{SOURCE_VAULT_ENV_URL}/v1/roles/{role_id}", headers=SOURCE_VAULT_HEADERS
+        f"{SOURCE_ENV_URL}/v1/roles/{role_id}", headers=SOURCE_ACCOUNT_HEADERS
     )
     response.raise_for_status()
     return response.json()
 
 def get_system_role(role_name):
     response = requests.get(
-        f"{TARGET_VAULT_ENV_URL}/v1/roles?name={role_name}&resource.type=VAULT&resource.ID={TARGET_VAULT_ID}", headers=TARGET_VAULT_HEADERS
+        f"{TARGET_ENV_URL}/v1/roles?name={role_name}&resource.type=VAULT&resource.ID={TARGET_VAULT_ID}", headers=TARGET_ACCOUNT_HEADERS
     )
     response.raise_for_status()
     return response.json()    
 
 def create_role(role):
     response = requests.post(
-        f"{TARGET_VAULT_ENV_URL}/v1/roles", json=role, headers=TARGET_VAULT_HEADERS
+        f"{TARGET_ENV_URL}/v1/roles", json=role, headers=TARGET_ACCOUNT_HEADERS
     )
     response.raise_for_status()
     return response.json()
@@ -52,7 +52,7 @@ def create_role(role):
 
 def get_role_policies(role_id):
     response = requests.get(
-        f"{SOURCE_VAULT_ENV_URL}/v1/roles/{role_id}/policies", headers=SOURCE_VAULT_HEADERS
+        f"{SOURCE_ENV_URL}/v1/roles/{role_id}/policies", headers=SOURCE_ACCOUNT_HEADERS
     )
     response.raise_for_status()
     return response.json()
@@ -60,8 +60,8 @@ def get_role_policies(role_id):
 
 def get_role_by_role_name(role_name):
     response = requests.get(
-        f"{TARGET_VAULT_ENV_URL}/v1/roles?name={role_name}&resource.type=VAULT&resource.ID={TARGET_VAULT_ID}",
-        headers=TARGET_VAULT_HEADERS,
+        f"{TARGET_ENV_URL}/v1/roles?name={role_name}&resource.type=VAULT&resource.ID={TARGET_VAULT_ID}",
+        headers=TARGET_ACCOUNT_HEADERS,
     )
     response.raise_for_status()
     return response.json()
@@ -71,9 +71,9 @@ def assign_policy_to_role(policy_ids, role_id: list):
     for policy_id in policy_ids:
         assign_request = {"ID": policy_id, "roleIDs": role_id}
         response = requests.post(
-            f"{TARGET_VAULT_ENV_URL}/v1/policies/assign",
+            f"{TARGET_ENV_URL}/v1/policies/assign",
             json=assign_request,
-            headers=TARGET_VAULT_HEADERS,
+            headers=TARGET_ACCOUNT_HEADERS,
         )
         response.raise_for_status()
     # return response.json()

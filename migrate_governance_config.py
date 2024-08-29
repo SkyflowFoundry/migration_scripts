@@ -4,21 +4,21 @@ from migrate_service_accounts import main as migrate_service_accounts
 
 
 SOURCE_VAULT_ID = os.getenv("SOURCE_VAULT_ID")
-SOURCE_VAULT_ACCOUNT_ID = os.getenv("SOURCE_VAULT_ACCOUNT_ID")
-SOURCE_VAULT_AUTH = os.getenv("SOURCE_VAULT_AUTH")
-SOURCE_VAULT_ENV_URL = os.getenv("SOURCE_VAULT_ENV_URL")
+SOURCE_ACCOUNT_ID = os.getenv("SOURCE_ACCOUNT_ID")
+SOURCE_ACCOUNT_AUTH = os.getenv("SOURCE_ACCOUNT_AUTH")
+SOURCE_ENV_URL = os.getenv("SOURCE_ENV_URL")
 
-SOURCE_VAULT_HEADERS = {
-    "X-SKYFLOW-ACCOUNT-ID": SOURCE_VAULT_ACCOUNT_ID,
-    "Authorization": f"Bearer {SOURCE_VAULT_AUTH}",
+SOURCE_ACCOUNT_HEADERS = {
+    "X-SKYFLOW-ACCOUNT-ID": SOURCE_ACCOUNT_ID,
+    "Authorization": f"Bearer {SOURCE_ACCOUNT_AUTH}",
     "Content-Type": "application/json",
 }
 
 
 def list_service_accounts() -> list:
     response = requests.get(
-        f"{SOURCE_VAULT_ENV_URL}/v1/serviceAccounts?resource.ID={SOURCE_VAULT_ID}&resource.type=VAULT",
-        headers=SOURCE_VAULT_HEADERS,
+        f"{SOURCE_ENV_URL}/v1/serviceAccounts?resource.ID={SOURCE_VAULT_ID}&resource.type=VAULT",
+        headers=SOURCE_ACCOUNT_HEADERS,
     )
     response.raise_for_status()
     return response.json()

@@ -6,30 +6,30 @@ from migrate_roles import main as migrate_roles
 
 SERVICE_ACCOUNT_IDS = os.getenv("SERVICE_ACCOUNT_IDS")
 TARGET_VAULT_ID = os.getenv("TARGET_VAULT_ID")
-SOURCE_VAULT_ACCOUNT_ID = os.getenv("SOURCE_VAULT_ACCOUNT_ID")
-TARGET_VAULT_ACCOUNT_ID = os.getenv("TARGET_VAULT_ACCOUNT_ID")
-SOURCE_VAULT_AUTH = os.getenv("SOURCE_VAULT_AUTH")
-TARGET_VAULT_AUTH = os.getenv("TARGET_VAULT_AUTH")
-SOURCE_VAULT_ENV_URL = os.getenv("SOURCE_VAULT_ENV_URL")
-TARGET_VAULT_ENV_URL = os.getenv("TARGET_VAULT_ENV_URL")
+SOURCE_ACCOUNT_ID = os.getenv("SOURCE_ACCOUNT_ID")
+TARGET_ACCOUNT_ID = os.getenv("TARGET_ACCOUNT_ID")
+SOURCE_ACCOUNT_AUTH = os.getenv("SOURCE_ACCOUNT_AUTH")
+TARGET_ACCOUNT_AUTH = os.getenv("TARGET_ACCOUNT_AUTH")
+SOURCE_ENV_URL = os.getenv("SOURCE_ENV_URL")
+TARGET_ENV_URL = os.getenv("TARGET_ENV_URL")
 
-SOURCE_VAULT_HEADERS = {
-    "X-SKYFLOW-ACCOUNT-ID": SOURCE_VAULT_ACCOUNT_ID,
-    "Authorization": f"Bearer {SOURCE_VAULT_AUTH}",
+SOURCE_ACCOUNT_HEADERS = {
+    "X-SKYFLOW-ACCOUNT-ID": SOURCE_ACCOUNT_ID,
+    "Authorization": f"Bearer {SOURCE_ACCOUNT_AUTH}",
     "Content-Type": "application/json",
 }
 
-TARGET_VAULT_HEADERS = {
-    "X-SKYFLOW-ACCOUNT-ID": TARGET_VAULT_ACCOUNT_ID,
-    "Authorization": f"Bearer {TARGET_VAULT_AUTH}",
+TARGET_ACCOUNT_HEADERS = {
+    "X-SKYFLOW-ACCOUNT-ID": TARGET_ACCOUNT_ID,
+    "Authorization": f"Bearer {TARGET_ACCOUNT_AUTH}",
     "Content-Type": "application/json",
 }
 
 
 def list_service_account_roles(service_account_id):
     response = requests.get(
-        f"{SOURCE_VAULT_ENV_URL}/v1/members/{service_account_id}/roles?member.type=SERVICE_ACCOUNT",
-        headers=SOURCE_VAULT_HEADERS,
+        f"{SOURCE_ENV_URL}/v1/members/{service_account_id}/roles?member.type=SERVICE_ACCOUNT",
+        headers=SOURCE_ACCOUNT_HEADERS,
     )
     response.raise_for_status()
     return response.json()
@@ -37,8 +37,8 @@ def list_service_account_roles(service_account_id):
 
 def get_service_account(service_account_id):
     response = requests.get(
-        f"{SOURCE_VAULT_ENV_URL}/v1/serviceAccounts/{service_account_id}",
-        headers=SOURCE_VAULT_HEADERS,
+        f"{SOURCE_ENV_URL}/v1/serviceAccounts/{service_account_id}",
+        headers=SOURCE_ACCOUNT_HEADERS,
     )
     response.raise_for_status()
     return response.json()
@@ -46,9 +46,9 @@ def get_service_account(service_account_id):
 
 def create_service_account(service_account):
     response = requests.post(
-        f"{TARGET_VAULT_ENV_URL}/v1/serviceAccounts",
+        f"{TARGET_ENV_URL}/v1/serviceAccounts",
         json=service_account,
-        headers=TARGET_VAULT_HEADERS,
+        headers=TARGET_ACCOUNT_HEADERS,
     )
     response.raise_for_status()
     return response.json()
@@ -61,9 +61,9 @@ def assign_roles_to_service_account(role_ids, service_account_id):
             "members": [{"type": "SERVICE_ACCOUNT", "ID": service_account_id}],
         }
         response = requests.post(
-            f"{TARGET_VAULT_ENV_URL}/v1/roles/assign",
+            f"{TARGET_ENV_URL}/v1/roles/assign",
             json=assign_request,
-            headers=TARGET_VAULT_HEADERS,
+            headers=TARGET_ACCOUNT_HEADERS,
         )
         response.raise_for_status()
 

@@ -5,29 +5,29 @@ import requests
 
 POLICY_IDS = os.getenv("POLICY_IDS")
 TARGET_VAULT_ID = os.getenv("TARGET_VAULT_ID")
-SOURCE_VAULT_ACCOUNT_ID = os.getenv("SOURCE_VAULT_ACCOUNT_ID")
-TARGET_VAULT_ACCOUNT_ID = os.getenv("TARGET_VAULT_ACCOUNT_ID")
-SOURCE_VAULT_AUTH = os.getenv("SOURCE_VAULT_AUTH")
-TARGET_VAULT_AUTH = os.getenv("TARGET_VAULT_AUTH")
-SOURCE_VAULT_ENV_URL = os.getenv("SOURCE_VAULT_ENV_URL")
-TARGET_VAULT_ENV_URL = os.getenv("TARGET_VAULT_ENV_URL")
+SOURCE_ACCOUNT_ID = os.getenv("SOURCE_ACCOUNT_ID")
+TARGET_ACCOUNT_ID = os.getenv("TARGET_ACCOUNT_ID")
+SOURCE_ACCOUNT_AUTH = os.getenv("SOURCE_ACCOUNT_AUTH")
+TARGET_ACCOUNT_AUTH = os.getenv("TARGET_ACCOUNT_AUTH")
+SOURCE_ENV_URL = os.getenv("SOURCE_ENV_URL")
+TARGET_ENV_URL = os.getenv("TARGET_ENV_URL")
 
-SOURCE_VAULT_HEADERS = {
-    "X-SKYFLOW-ACCOUNT-ID": SOURCE_VAULT_ACCOUNT_ID,
-    "Authorization": f"Bearer {SOURCE_VAULT_AUTH}",
+SOURCE_ACCOUNT_HEADERS = {
+    "X-SKYFLOW-ACCOUNT-ID": SOURCE_ACCOUNT_ID,
+    "Authorization": f"Bearer {SOURCE_ACCOUNT_AUTH}",
     "Content-Type": "application/json",
 }
 
-TARGET_VAULT_HEADERS = {
-    "X-SKYFLOW-ACCOUNT-ID": TARGET_VAULT_ACCOUNT_ID,
-    "Authorization": f"Bearer {TARGET_VAULT_AUTH}",
+TARGET_ACCOUNT_HEADERS = {
+    "X-SKYFLOW-ACCOUNT-ID": TARGET_ACCOUNT_ID,
+    "Authorization": f"Bearer {TARGET_ACCOUNT_AUTH}",
     "Content-Type": "application/json",
 }
 
 
 def get_policy(policy_id):
     response = requests.get(
-        f"{SOURCE_VAULT_ENV_URL}/v1/policies/{policy_id}", headers=SOURCE_VAULT_HEADERS
+        f"{SOURCE_ENV_URL}/v1/policies/{policy_id}", headers=SOURCE_ACCOUNT_HEADERS
     )
     response.raise_for_status()
     return response.json()
@@ -35,7 +35,7 @@ def get_policy(policy_id):
 
 def create_policy(policy_data):
     response = requests.post(
-        f"{TARGET_VAULT_ENV_URL}/v1/policies", json=policy_data, headers=TARGET_VAULT_HEADERS
+        f"{TARGET_ENV_URL}/v1/policies", json=policy_data, headers=TARGET_ACCOUNT_HEADERS
     )
     response.raise_for_status()
     return response.json()
