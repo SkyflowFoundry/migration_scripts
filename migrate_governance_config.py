@@ -4,6 +4,7 @@ from migrate_service_accounts import main as migrate_service_accounts
 
 
 SOURCE_VAULT_ID = os.getenv("SOURCE_VAULT_ID")
+TARGET_VAULT_ID = os.getenv("TARGET_VAULT_ID")
 SOURCE_ACCOUNT_ID = os.getenv("SOURCE_ACCOUNT_ID")
 SOURCE_ACCOUNT_AUTH = os.getenv("SOURCE_ACCOUNT_AUTH")
 SOURCE_ENV_URL = os.getenv("SOURCE_ENV_URL")
@@ -37,15 +38,14 @@ def main():
         )
         print("-- Working on Service accounts migration --")
         new_service_accounts = migrate_service_accounts(service_account_ids)
-        # print("Service account credentials", [sa for sa in new_service_accounts])
         print(
-            "-- !! Governance resources migration to target env done successfully !! --"
+            f"-- Governance resources are migrated and applied on {TARGET_VAULT_ID} successfully. --"
         )
     except requests.exceptions.HTTPError as http_err:
-        print(f"-- migration HTTP error: {http_err.response.content.decode()} --")
+        print(f"-- migrate_governance HTTP error: {http_err.response.content.decode()} --")
         exit(1)
     except Exception as err:
-        print(f"-- migration other error: {err} --")
+        print(f"-- migrate_governance other error: {err} --")
         exit(1)
 
 

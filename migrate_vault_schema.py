@@ -54,15 +54,16 @@ def main():
             print(f"-- Working on creating vault in target account --")
             create_vault_request = transform_payload(vault_details["vault"])
             create_vault_response = create_vault(create_vault_request)
-            print(f"-- Vault with ID {create_vault_response['ID']} is successfully created in target account --")
+            print(f"-- Vault with ID {create_vault_response['ID']} has been created successfully in the target account. --")
+            return create_vault_response['ID']
         else:
             print("-- Please provide valid input. Missing WorkspaceId or VaultId. --")
 
     except requests.exceptions.HTTPError as http_err:
-        print(f"-- migration HTTP error: {http_err.response.content.decode()} --")
+        print(f"-- migrate_vault_schema HTTP error: {http_err.response.content.decode()} --")
         exit(1)
     except Exception as err:
-        print(f"-- migration other error: {err} --")
+        print(f"-- migrate_vault_schema other error: {err} --")
         exit(1)  
 
 if __name__ == "__main__":
