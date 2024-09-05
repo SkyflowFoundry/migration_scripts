@@ -54,7 +54,7 @@ Use this script to create a vault with the source vault schema in the target acc
 
 #### Parameters:
 - **`source_vault_id`**: Source Vault ID.
-- **`workspace_id`**: Workspace ID.
+- **`workspace_id`**: Workspace ID of the target account.
 - **`vault_name`**: (Optional) Name for the target vault. If not given, source vault name will be used.
 - **`vault_description`**: (Optional) Description for the target vault. If not given, source vault description will be used.
 - **`source_account_access_token`**: Access token of the source account.
