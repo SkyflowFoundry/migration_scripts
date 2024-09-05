@@ -55,7 +55,10 @@ def main():
             create_vault_request = transform_payload(vault_details["vault"])
             create_vault_response = create_vault(create_vault_request)
             print(f"-- Vault with ID {create_vault_response['ID']} has been created successfully in the target account. --")
-            return create_vault_response['ID']
+            if(os.getenv("MIGRATE_GOVERNANCE")):
+                env_file = os.getenv('GITHUB_ENV')
+                with open(env_file, "a") as file:
+                    file.write(f"TARGET_VAULT_ID={create_vault_response['ID']}")
         else:
             print("-- Please provide valid input. Missing WorkspaceId or VaultId. --")
 
@@ -67,4 +70,4 @@ def main():
         exit(1)  
 
 if __name__ == "__main__":
-   print(main())
+    main()
