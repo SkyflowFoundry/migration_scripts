@@ -122,7 +122,7 @@ def main(role_ids=None):
                         roles_created.append({"ID" : role_response["roles"][0]["ID"]})
                     else:
                         print("-- ROLE does not exist --") 
-                elif(should_create_role):
+                if(should_create_role):
                     role_payload = transform_role_payload(role_info)
                     print(f"-- Creating {role_name} role --")
                     new_role = create_role(role_payload)

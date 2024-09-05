@@ -23,7 +23,7 @@ on:
         required: true
 
 jobs:
-  execute-migration-script:
+  execute-schema-and-governance-migration-script:
     runs-on: ubuntu-latest
 
     steps:
@@ -64,7 +64,4 @@ jobs:
           TARGET_ACCOUNT_ID: ${{ vars.TARGET_ACCOUNT_ID }}
           SOURCE_ENV_URL: ${{ vars.SOURCE_ENV_URL }}
           TARGET_ENV_URL: ${{ vars.TARGET_ENV_URL }}
-        run: |
-          echo "Val is: $TARGET_VAULT_ID"
-         
-          python3 migrate_governance_config.py
+        run: python3 migrate_governance_config.py

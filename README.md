@@ -2,7 +2,7 @@
 
 This repository contains migration scripts to manage and migrate various resources from one account to other. The scripts are designed to be executed using GitHub workflows, enabling automated and streamlined migration processes.
 
-## Governance Migration Scripts
+## Governance Migration
 
 ### 1. Policies Migration
 
@@ -48,9 +48,9 @@ Migrates the complete governance setup, including policies, roles, and service a
 - **`source_account_access_token`**: Access token of the source account.
 - **`target_account_access_token`**: Access token of the target account.
 
-## Vault Schema Migration Script
+## Vault Schema Migration
 
-Use this script to create a vault with the source vault schema in the target account / environment.
+Use this script to create a vault with the source vault schema in the target account.
 
 #### Parameters:
 - **`source_vault_id`**: Source Vault ID.
@@ -58,7 +58,19 @@ Use this script to create a vault with the source vault schema in the target acc
 - **`vault_name`**: (Optional) Name for the target vault. If not given, source vault name will be used.
 - **`vault_description`**: (Optional) Description for the target vault. If not given, source vault description will be used.
 - **`source_account_access_token`**: Access token of the source account.
-- **`target_account_access_token`**: Access token of the target account. Generate an access token from Studio.
+- **`target_account_access_token`**: Access token of the target account. Use the access token generated from Studio.
+
+## Vault Schema + Governance Migration
+
+Use this script to create a vault with the source vault schema and in to migrate Governance resource for the given vault inthe target account.
+
+#### Parameters:
+- **`source_vault_id`**: Source Vault ID.
+- **`workspace_id`**: Workspace ID of the target account.
+- **`vault_name`**: (Optional) Name for the target vault. If not given, source vault name will be used.
+- **`vault_description`**: (Optional) Description for the target vault. If not given, source vault description will be used.
+- **`source_account_access_token`**: Access token of the source account.
+- **`target_account_access_token`**: Access token of the target account. Use the access token generated from Studio.
 
 ## Running the Scripts
 

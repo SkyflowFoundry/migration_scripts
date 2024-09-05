@@ -17,7 +17,7 @@ on:
         required: true
 
 jobs:
-  execute-migration-script:
+  execute-governance-migration-script:
     runs-on: ubuntu-latest
 
     steps:

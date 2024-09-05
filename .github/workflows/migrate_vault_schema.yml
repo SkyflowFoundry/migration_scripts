@@ -23,7 +23,7 @@ on:
         required: true
 
 jobs:
-  execute-migration-script:
+  execute-schema-migration-script:
     runs-on: ubuntu-latest
 
     steps:

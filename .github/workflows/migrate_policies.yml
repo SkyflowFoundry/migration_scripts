@@ -17,7 +17,7 @@ on:
         required: true
 
 jobs:
-  execute-migration-script:
+  execute-policies-migration-script:
     runs-on: ubuntu-latest
 
     steps:
