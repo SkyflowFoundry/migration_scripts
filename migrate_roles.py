@@ -124,14 +124,14 @@ def main(role_ids=None):
                         print("-- ROLE does not exist --") 
                 if(should_create_role):
                     role_payload = transform_role_payload(role_info)
-                    print(f"-- Creating {role_name} role --")
+                    print(f"-- Creating ROLE --")
                     new_role = create_role(role_payload)
                     roles_created.append(new_role)
                     print(f"-- Fetching POLICIES for given ROLE --")
                     role_policies = get_role_policies(role_id)
                     policy_ids = [policy["ID"] for policy in role_policies["policies"]]
                     no_of_policies = len(policy_ids)
-                    if(no_of_policies > 0):
+                    if(no_of_policies == 0):
                         print('-- No POLICIES found for the given role --')
                     else:
                         print(f"-- Working on POLICIES migration. No. of policies found for given role: {no_of_policies} --")
