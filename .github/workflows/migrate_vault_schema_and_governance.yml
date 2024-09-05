@@ -54,7 +54,7 @@ jobs:
         run: |
           # Executing schema migration script
           RESPONE_VAULT_ID=$(python migrate_vault_schema.py)
-          echo $RESPONSE_VAULT_ID
+          echo "Res: $RESPONSE_VAULT_ID"
           echo "TARGET_VAULT_ID=$(RESPONE_VAULT_ID)" >> $GITHUB_ENV
       
       - name: Run governance migration script
@@ -68,6 +68,6 @@ jobs:
           SOURCE_ENV_URL: ${{ vars.SOURCE_ENV_URL }}
           TARGET_ENV_URL: ${{ vars.TARGET_ENV_URL }}
         run: |
-          echo "Val is: {{ env.TARGET_VAULT_ID }}"
+          echo "Val is: $TARGET_VAULT_ID"
          
           python3 migrate_governance_config.py
