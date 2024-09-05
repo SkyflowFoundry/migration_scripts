@@ -112,15 +112,19 @@ def main(role_ids=None):
                 system_role = get_system_role(role_name)
                 roles_created.append({"ID": system_role["roles"][0]["ID"]})
             else:
+                should_create_role = True
                 if(should_enable_custom_role_check):
                     print('-- checking if a role exists for the given vault --')
                     role_response = get_role_by_role_name(role_name)
                     if(len(role_response["roles"]) == 1):
                         print("-- Found an existing CUSTOM_ROLE --")
+                        should_create_role = False
                         roles_created.append({"ID" : role_response["roles"][0]["ID"]})
-                else:
+                    else:
+                        print("-- ROLE does not exist --") 
+                elif(should_create_role):
                     role_payload = transform_role_payload(role_info)
-                    print("-- ROLE does not exist, working on ROLE creation --")
+                    print(f"-- Creating {role_name} role --")
                     new_role = create_role(role_payload)
                     roles_created.append(new_role)
                     print(f"-- Fetching POLICIES for given ROLE --")
