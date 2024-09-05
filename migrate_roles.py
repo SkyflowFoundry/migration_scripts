@@ -130,10 +130,14 @@ def main(role_ids=None):
                     print(f"-- Fetching POLICIES for given ROLE --")
                     role_policies = get_role_policies(role_id)
                     policy_ids = [policy["ID"] for policy in role_policies["policies"]]
-                    print(f"-- Working on POLICIES migration --")
-                    policies_created = migrate_policies(policy_ids)
-                    created_policy_ids = [policy["ID"] for policy in policies_created]
-                    assign_policy_to_role(created_policy_ids, [new_role["ID"]])
+                    no_of_policies = len(policy_ids)
+                    if(no_of_policies > 0):
+                        print('-- No POLICIES found for the given role --')
+                    else:
+                        print(f"-- Working on POLICIES migration. No. of policies found for given role: {no_of_policies} --")
+                        policies_created = migrate_policies(policy_ids)
+                        created_policy_ids = [policy["ID"] for policy in policies_created]
+                        assign_policy_to_role(created_policy_ids, [new_role["ID"]])
                     print(f"-- Migration done for ROLE: {role_name}. Source ROLE_ID: {role_id}, Target ROLE_ID: {new_role['ID']} --")        
         return roles_created
     except requests.exceptions.HTTPError as http_err:

@@ -39,7 +39,7 @@ def main():
         print("-- Working on Service accounts migration --")
         new_service_accounts = migrate_service_accounts(service_account_ids)
         print(
-            f"-- Governance resources are migrated and applied on {TARGET_VAULT_ID} successfully. --"
+            f"-- Governance resources are migrated and applied on {TARGET_VAULT_ID} successfully --"
         )
     except requests.exceptions.HTTPError as http_err:
         print(f"-- migrate_governance HTTP error: {http_err.response.content.decode()} --")

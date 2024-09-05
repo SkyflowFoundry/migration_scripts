@@ -79,6 +79,7 @@ def transform_service_account_payload(source_resource):
 
 def main(service_accounts_ids=None):
     try:
+        print("-- SERVICE ACCOUNTS MIGRATION --")
         service_accounts_ids = (
             service_accounts_ids
             if service_accounts_ids
