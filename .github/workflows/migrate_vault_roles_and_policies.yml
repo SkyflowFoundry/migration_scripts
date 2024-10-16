@@ -1,4 +1,4 @@
-name: vault_governance_migration
+name: vault_roles_and_policies_migration_script
 
 on:
   workflow_dispatch:
@@ -17,7 +17,7 @@ on:
         required: true
 
 jobs:
-  execute-governance-migration-script:
+  execute-vault-roles-and-policies-migration-script:
     runs-on: ubuntu-latest
 
     steps:
@@ -42,4 +42,4 @@ jobs:
           TARGET_ACCOUNT_ID: ${{ vars.TARGET_ACCOUNT_ID }}
           SOURCE_ENV_URL: ${{ vars.SOURCE_ENV_URL }}
           TARGET_ENV_URL: ${{ vars.TARGET_ENV_URL }}
-        run: python3 migrate_governance_config.py
+        run: python3 migrate_vault_roles_and_policies.py

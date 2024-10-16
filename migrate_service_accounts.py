@@ -70,7 +70,7 @@ def assign_roles_to_service_account(role_ids, service_account_id):
 
 def transform_service_account_payload(source_resource):
     tramsformed_resource = source_resource
-    tramsformed_resource["resource"] = {"ID": TARGET_VAULT_ID, "type": "VAULT"}
+    # tramsformed_resource["resource"] = {"ID": TARGET_VAULT_ID, "type": "VAULT"} // not require due to SA flattening change
     del tramsformed_resource["serviceAccount"]["ID"]
     del tramsformed_resource["serviceAccount"]["namespace"]
     del tramsformed_resource["serviceAccount"]["BasicAudit"]

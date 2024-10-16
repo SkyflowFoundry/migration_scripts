@@ -40,9 +40,11 @@ Note: Using existing roles / policies for a new service account will result in d
 - **`source_account_access_token`**: Access token of the source account.
 - **`target_account_access_token`**: Access token of the target account.
 
-#### 4. Governance Migration
+#### 4. Vault Roles and Policies Migration
 
-Migrates the complete governance setup, including policies, roles, and service accounts, from the source Skyflow vault to the target vault.
+Migrates all the Vault Roles, and Policies, from the source Skyflow vault to the target vault. 
+
+Note: This script does not migrate Service accounts of the given vault. Service accounts can be either created using Service accounts migration action or using Skyflow Studio.
 
 ##### Parameters:
 - **`source_vault_id`**: Source Vault ID.
@@ -64,7 +66,7 @@ Use this script to create a vault with the source vault schema in the target acc
 
 ### Vault Schema + Governance Migration
 
-Use this script to create a vault with the source vault schema and to migrate Governance resources of the source vault to the newly created target vault.
+Use this script to create a vault with the source vault schema and to migrate vault roles and policy resources of the source vault to the newly created target vault.
 
 ##### Parameters:
 - **`source_vault_id`**: Source Vault ID.
@@ -101,9 +103,9 @@ https://docs.github.com/en/actions/managing-workflow-runs-and-deployments/managi
 
 To run the migration scripts, ensure that you provide the necessary input parameters and repository variables. Simply trigger the workflow with the correct inputs, and let the workflow do the magic to seamlessly migrate your Skyflow resources!
 
-### Step 4: Get your Credentials file (Applicable for SA/Vault Governance migration)
+### Step 4: Get your Credentials file (Applicable for Service Accounts migration)
 
-Governance migration scripts allow you to capture the desired state of your governance configurations and policies, and then apply those changes consistently and reliably across your environments.
+Governance migration scripts allow you to capture the desired state of your governance roles and policies, and then apply those changes consistently and reliably across your environments.
 
 - Re-Key the SA to get credentials from [Studio or API](https://docs.skyflow.com/rotate-service-account-keys/#prerequisites)
 - Secure service account credentials by storing them in designated secret stores with built-in security, and securely pass info to runtime applications.

@@ -54,7 +54,7 @@ jobs:
           MIGRATE_GOVERNANCE: true
         run: python3 migrate_vault_schema.py
       
-      - name: Run governance migration script
+      - name: Run vault roles and policies migration script
         env:
           SOURCE_VAULT_ID: ${{ github.event.inputs.source_vault_id }}
           TARGET_VAULT_ID: ${{ env.TARGET_VAULT_ID }}
@@ -64,4 +64,4 @@ jobs:
           TARGET_ACCOUNT_ID: ${{ vars.TARGET_ACCOUNT_ID }}
           SOURCE_ENV_URL: ${{ vars.SOURCE_ENV_URL }}
           TARGET_ENV_URL: ${{ vars.TARGET_ENV_URL }}
-        run: python3 migrate_governance_config.py
+        run: python3 migrate_vault_roles_and_policies.py
