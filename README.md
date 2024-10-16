@@ -64,7 +64,7 @@ Use this script to create a vault with the source vault schema in the target acc
 - **`source_account_access_token`**: Access token of the source account.
 - **`target_account_access_token`**: Access token of the target account. Use the access token generated from Studio.
 
-### Vault Schema + Governance Migration
+### Vault Schema + Governance Resources Migration
 
 Use this script to create a vault with the source vault schema and to migrate vault roles and policy resources of the source vault to the newly created target vault.
 
