@@ -28,7 +28,7 @@ def get_vault_details(vaultID: str):
     return response.json()
 
 def update_vault(update_vault_request_payload):
-    response = requests.post(f"{TARGET_ENV_URL}/v1/vaults/{TARGET_VAULT_ID}", json=update_vault_request_payload, headers=TARGET_ACCOUNT_HEADERS)
+    response = requests.patch(f"{TARGET_ENV_URL}/v1/vaults/{TARGET_VAULT_ID}", json=update_vault_request_payload, headers=TARGET_ACCOUNT_HEADERS)
     response.raise_for_status()
     return response.json()
 
@@ -48,7 +48,7 @@ def main():
         if SOURCE_VAULT_ID and TARGET_VAULT_ID:
             print(f"-- Fetching {SOURCE_VAULT_ID} vault details --")
             vault_details = get_vault_details(SOURCE_VAULT_ID)
-            print(f"-- Working on creating vault in target account --")
+            print(f"-- Working on updating vault in target account --")
             update_vault_request = transform_payload(vault_details["vault"])
             update_vault_response = update_vault(update_vault_request)
             print(f"-- Vault with ID {update_vault_response['ID']} has been updated successfully in the target account. --")
