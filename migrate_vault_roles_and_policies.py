@@ -26,7 +26,7 @@ def list_all_vault_custom_roles() -> list:
 
 def main():
     try:
-        print(f"-- Fetching all ROLES for given VAULT --")
+        print(f"-- Fetching all roles for the given Vault --")
         roles = list_all_vault_custom_roles()
         role_ids = [
             role["ID"]

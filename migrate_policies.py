@@ -103,7 +103,7 @@ def main(policy_ids=None):
             policy_payload = transform_policy_payload(fetched_policy)
             policy = create_policy(policy_payload)
             policies_created.append(policy)
-        print(f"-- POLICIES Migration done --")        
+        print(f"-- Policies migration completed. --")        
         return policies_created
     except requests.exceptions.HTTPError as http_err:
         print(f'-- migrate_policies HTTP error: {http_err.response.content.decode()} --')

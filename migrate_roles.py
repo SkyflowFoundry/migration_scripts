@@ -104,7 +104,7 @@ def main(role_ids=None):
         role_ids = role_ids if role_ids else ast.literal_eval(ROLE_IDS)
         roles_created = []
         for index, role_id in enumerate(role_ids):
-            print(f"-- Working on ROLE: {index + 1}  --")
+            print(f"-- Working on Role: {index + 1}  --")
             role_info = get_role(role_id)
             role_name = role_info["role"]["definition"]["name"]
             if(role_name in SYSTEM_ROLES):
@@ -121,24 +121,24 @@ def main(role_ids=None):
                         should_create_role = False
                         roles_created.append({"ID" : role_response["roles"][0]["ID"]})
                     else:
-                        print("-- ROLE does not exist --") 
+                        print("-- Role does not exist --") 
                 if(should_create_role):
                     role_payload = transform_role_payload(role_info)
-                    print(f"-- Creating ROLE --")
+                    print(f"-- Creating Role --")
                     new_role = create_role(role_payload)
                     roles_created.append(new_role)
-                    print(f"-- Fetching POLICIES for given ROLE --")
+                    print(f"-- Fetching Policies for the given Role --")
                     role_policies = get_role_policies(role_id)
                     policy_ids = [policy["ID"] for policy in role_policies["policies"]]
                     no_of_policies = len(policy_ids)
                     if(no_of_policies == 0):
-                        print('-- No POLICIES found for the given role --')
+                        print('-- No Policies found for the given role --')
                     else:
-                        print(f"-- Working on POLICIES migration. No. of policies found for given role: {no_of_policies} --")
+                        print(f"-- Working on Policies migration. No. of policies found for given role: {no_of_policies} --")
                         policies_created = migrate_policies(policy_ids)
                         created_policy_ids = [policy["ID"] for policy in policies_created]
                         assign_policy_to_role(created_policy_ids, [new_role["ID"]])
-                    print(f"-- Migration done for ROLE: {role_name}. Source ROLE_ID: {role_id}, Target ROLE_ID: {new_role['ID']} --")        
+                    print(f"-- Role migration completed: {role_name}. Source ROLE_ID: {role_id}, Target ROLE_ID: {new_role['ID']} --")        
         return roles_created
     except requests.exceptions.HTTPError as http_err:
         print(f'-- Role creation failed for {role_id}. Role with name {role_name} already exists in target account. Please update this role name in your source account and try again. --')

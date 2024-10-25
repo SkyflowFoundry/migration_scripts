@@ -95,7 +95,7 @@ def main(service_accounts_ids=None):
             print("-- Creating SA --")
             new_service_account = create_service_account(service_account_payload)
             created_service_accounts.append(new_service_account)
-            print(f"-- Fetching ROLES for the given SA --")
+            print(f"-- Fetching Roles for given SA --")
             service_account_roles = list_service_account_roles(service_account_id)
             service_account_roles_ids = [
                 service_account_role["role"]["ID"]
@@ -103,15 +103,15 @@ def main(service_accounts_ids=None):
             ]
             no_of_roles = len(service_account_roles_ids)
             if(no_of_roles == 0):
-                print("-- No ROLES found for given SA --")
+                print("-- No Roles found for given SA --")
             else:
-                print(f"-- Working on ROLES migration. No.of roles for SA: {no_of_roles} --")
+                print(f"-- Working on Roles migration. No.of Roles for given SA: {no_of_roles} --")
                 roles_created = migrate_roles(service_account_roles_ids)
                 created_role_ids = [role["ID"] for role in roles_created]
                 assign_roles_to_service_account(
                 created_role_ids, new_service_account["clientID"]
                 )
-            print(f"-- Migration done for SERVICE_ACCOUNT: {service_account_resource['serviceAccount']['name']}. Source SERVICE_ACCOUNT_ID: {service_account_id}, Target SERVICE_ACCOUNT_ID: {new_service_account['clientID']} --")
+            print(f"-- Service accounts migration completed: {service_account_resource['serviceAccount']['name']}. Source SERVICE_ACCOUNT_ID: {service_account_id}, Target SERVICE_ACCOUNT_ID: {new_service_account['clientID']} --")
         return created_service_accounts
     except requests.exceptions.HTTPError as http_err:
         print(
