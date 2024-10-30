@@ -1,0 +1,58 @@
+name: update_role
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_role_id:
+        description: "Source Role ID"
+        required: true
+      target_role_id:
+        description: "Target Role ID"
+        required: true
+      update_role_criteria:
+        description: 'Update Role'
+        required: true
+        default: 'update metadata'
+        type: choice
+        options:
+          - update metadata
+          - assign policy
+      list_of_policy_ids_to_assign:
+        description: "List of Policy IDs to assign"
+        required: false
+      source_account_access_token:
+        description: "Access token of the Source Account"
+        required: true
+      target_account_access_token:
+        description: "Access token of the Target Account"
+        required: true
+
+jobs:
+  execute-update-role-script:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run Python script
+        env:
+          SOURCE_ROLE_ID: ${{ github.event.inputs.source_role_id }}
+          TARGET_ROLE_ID: ${{ github.event.inputs.target_role_id }}
+          UPDATE_ROLE_CRITERIA: ${{ github.event.inputs.update_role_criteria }}
+          POLICY_IDS: ${{ github.event.inputs.list_of_policy_ids_to_assign }}
+          SOURCE_ACCOUNT_AUTH: ${{ github.event.inputs.source_account_access_token }}
+          TARGET_ACCOUNT_AUTH: ${{ github.event.inputs.target_account_access_token }}
+          SOURCE_ACCOUNT_ID: ${{ vars.SOURCE_ACCOUNT_ID }}
+          TARGET_ACCOUNT_ID: ${{ vars.TARGET_ACCOUNT_ID }}
+          SOURCE_ENV_URL: ${{ vars.SOURCE_ENV_URL }}
+          TARGET_ENV_URL: ${{ vars.TARGET_ENV_URL }}
+        run: python3 update_role.py
