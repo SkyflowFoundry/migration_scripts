@@ -12,11 +12,11 @@ on:
       update_role_criteria:
         description: 'Update Role'
         required: true
-        default: 'update metadata'
+        default: 'UPDATE_METADATA'
         type: choice
         options:
-          - update metadata
-          - assign policy
+          - UPDATE_METADATA
+          - ASSIGN_POLICY
       list_of_policy_ids_to_assign:
         description: "List of Policy IDs to assign"
         required: false

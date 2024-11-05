@@ -1,3 +1,4 @@
+import ast
 import os
 import requests
 
@@ -27,7 +28,7 @@ TARGET_ACCOUNT_HEADERS = {
 
 def get_source_role(policy_id):
     response = requests.get(
-        f"{SOURCE_ENV_URL}/v1/policies/{policy_id}", headers=SOURCE_ACCOUNT_HEADERS
+        f"{SOURCE_ENV_URL}/v1/roles/{policy_id}", headers=SOURCE_ACCOUNT_HEADERS
     )
     response.raise_for_status()
     return response.json()
@@ -35,7 +36,7 @@ def get_source_role(policy_id):
 
 def get_target_role(policy_id):
     response = requests.get(
-        f"{TARGET_ENV_URL}/v1/policies/{policy_id}", headers=TARGET_ACCOUNT_HEADERS
+        f"{TARGET_ENV_URL}/v1/roles/{policy_id}", headers=TARGET_ACCOUNT_HEADERS
     )
     response.raise_for_status()
     return response.json()
@@ -51,9 +52,12 @@ def update_role(role_data):
     return response.json()
 
 
-def transform_role_payload(source_policy, target_policy):
-    # TODO
-    return
+def transform_role_payload(source_role, target_role):
+    role_payload = {"ID":target_role["role"]["ID"], "roleDefinition": {}}
+    role_payload["roleDefinition"]["name"] = source_role["role"]["definition"]["name"]
+    role_payload["roleDefinition"]["displayName"] = source_role["role"]["definition"]["displayName"]
+    role_payload["roleDefinition"]["description"] = source_role["role"]["definition"]["description"]
+    return role_payload
 
 def assign_policy_to_role(policy_ids, role_id: list):
     for policy_id in policy_ids:
@@ -76,8 +80,14 @@ def main():
             source_role = get_source_role(source_role_id)
             target_role = get_target_role(target_role_id)
             role_payload = transform_role_payload(source_role, target_role)
-            update_role(role_payload)
-            # should assign policies according to criteria
+            if(UPDATE_ROLE_CRITERIA == "UPDATE_METADATA"):
+                update_role(role_payload)
+            elif(UPDATE_ROLE_CRITERIA == "ASSIGN_POLICY"):
+                if(POLICY_IDS):
+                    policy_ids = policy_ids if policy_ids else ast.literal_eval(POLICY_IDS)
+                    assign_policy_to_role(policy_ids)
+                else:
+                    print("Please provide policy IDs to assign.")
             print(f"-- Role {TARGET_ROLE_ID} updated successfully. --")
         else:
             print("-- Please provide valid input. Missing input paramaters. --")
