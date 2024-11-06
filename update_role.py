@@ -53,11 +53,16 @@ def update_role(role_data):
 
 
 def transform_role_payload(source_role, target_role):
-    role_payload = {"ID":target_role["role"]["ID"], "roleDefinition": {}}
-    role_payload["roleDefinition"]["name"] = source_role["role"]["definition"]["name"]
-    role_payload["roleDefinition"]["displayName"] = source_role["role"]["definition"]["displayName"]
-    role_payload["roleDefinition"]["description"] = source_role["role"]["definition"]["description"]
+    role_payload = {
+        "ID": target_role["role"]["ID"],
+        "roleDefinition": {
+            "name": source_role["role"]["definition"]["name"],
+            "displayName": source_role["role"]["definition"]["displayName"],
+            "description": source_role["role"]["definition"]["description"],
+        },
+    }
     return role_payload
+
 
 def assign_policy_to_role(policy_ids, role_id: list):
     for policy_id in policy_ids:
@@ -72,8 +77,6 @@ def assign_policy_to_role(policy_ids, role_id: list):
 
 def main():
     try:
-        print("Criteria", UPDATE_ROLE_CRITERIA)
-        print("List of Policies", POLICY_IDS)
         source_role_id = SOURCE_ROLE_ID
         target_role_id = TARGET_ROLE_ID
         if source_role_id and target_role_id:
@@ -85,9 +88,12 @@ def main():
             elif(UPDATE_ROLE_CRITERIA == "ASSIGN_POLICY"):
                 if(POLICY_IDS):
                     policy_ids = policy_ids if policy_ids else ast.literal_eval(POLICY_IDS)
-                    assign_policy_to_role(policy_ids)
+                    if(len(policy_ids) > 0):
+                        assign_policy_to_role(policy_ids)
+                    else:
+                        print("-- Provided PolicyIds list is empty. --")
                 else:
-                    print("Please provide policy IDs to assign.")
+                    print("-- Please provide policy IDs to assign. --")
             print(f"-- Role {TARGET_ROLE_ID} updated successfully. --")
         else:
             print("-- Please provide valid input. Missing input paramaters. --")

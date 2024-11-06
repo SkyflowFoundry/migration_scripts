@@ -1,3 +1,4 @@
+import ast
 import os
 import requests
 
@@ -25,35 +26,54 @@ TARGET_ACCOUNT_HEADERS = {
 }
 
 
-def get_source_service_account(policy_id):
+def get_source_service_account(service_account_id):
     response = requests.get(
-        f"{SOURCE_ENV_URL}/v1/policies/{policy_id}", headers=SOURCE_ACCOUNT_HEADERS
+        f"{SOURCE_ENV_URL}/v1/serviceAccounts/{service_account_id}",
+        headers=SOURCE_ACCOUNT_HEADERS,
     )
     response.raise_for_status()
     return response.json()
 
 
-def get_target_service_account(policy_id):
+def get_target_service_account(service_account_id):
     response = requests.get(
-        f"{TARGET_ENV_URL}/v1/policies/{policy_id}", headers=TARGET_ACCOUNT_HEADERS
-    )
-    response.raise_for_status()
-    return response.json()
-
-
-def update_service_account(role_data):
-    response = requests.patch(
-        f"{TARGET_ENV_URL}/v1/roles/{TARGET_SERVICE_ACCOUNT_ID}",
-        json=role_data,
+        f"{TARGET_ENV_URL}/v1/serviceAccounts/{service_account_id}",
         headers=TARGET_ACCOUNT_HEADERS,
     )
     response.raise_for_status()
     return response.json()
 
 
-def transform_service_account_payload(source_policy, target_policy):
-    # TODO
-    return
+def update_service_account(service_account_data):
+    response = requests.patch(
+        f"{TARGET_ENV_URL}/v1/serviceAccounts/{TARGET_SERVICE_ACCOUNT_ID}",
+        json=service_account_data,
+        headers=TARGET_ACCOUNT_HEADERS,
+    )
+    response.raise_for_status()
+    return response.json()
+
+
+def transform_service_account_payload(source_service_account, target_service_account):
+    service_account_payload = {
+        "ID": target_service_account["serviceAccount"]["ID"],
+        "serviceAccount": {
+            "ID": target_service_account["serviceAccount"]["ID"],
+            "name": source_service_account["serviceAccount"]["name"],
+            "displayName": source_service_account["serviceAccount"]["displayName"],
+            "description": source_service_account["serviceAccount"]["description"]
+        },
+        "clientConfiguration": {
+            "enforceContextID": source_service_account["clientConfiguration"][
+                "enforceContextID"
+            ],
+            "enforceSignedDataTokens": source_service_account["clientConfiguration"][
+                "enforceSignedDataTokens"
+            ],
+        },
+    }
+    return service_account_payload
+
 
 def assign_roles_to_service_account(role_ids, service_account_id):
     for role_id in role_ids:
@@ -68,23 +88,41 @@ def assign_roles_to_service_account(role_ids, service_account_id):
         )
         response.raise_for_status()
 
+
 def main():
     try:
-        print("Criteria", UPDATE_SERVICE_ACCOUNT_CRITERIA)
-        print("List of Roles", ROLE_IDS)
         source_service_account_id = SOURCE_SERVICE_ACCOUNT_ID
         target_service_account_id = TARGET_SERVICE_ACCOUNT_ID
         if source_service_account_id and target_service_account_id:
-            source_service_account = get_source_service_account(source_service_account_id)
-            target_service_account = get_target_service_account(target_service_account_id)
-            service_account_payload = transform_service_account_payload(source_service_account, target_service_account)
-            # should assign roles according to criteria
-            update_service_account(service_account_payload)
-            print(f"-- Service account {TARGET_SERVICE_ACCOUNT_ID} updated successfully. --")
+            source_service_account = get_source_service_account(
+                source_service_account_id
+            )
+            target_service_account = get_target_service_account(
+                target_service_account_id
+            )
+            service_account_payload = transform_service_account_payload(
+                source_service_account, target_service_account
+            )
+            if UPDATE_SERVICE_ACCOUNT_CRITERIA == "UPDATE_METADATA":
+                update_service_account(service_account_payload)
+            elif UPDATE_SERVICE_ACCOUNT_CRITERIA == "ASSIGN_POLICY":
+                if ROLE_IDS:
+                    role_ids = role_ids if role_ids else ast.literal_eval(ROLE_IDS)
+                    if len(role_ids) > 0:
+                        assign_roles_to_service_account(role_ids)
+                    else:
+                        print("-- Provided RoleIDs list is empty. --")
+                else:
+                    print("-- Please provide Role IDs to assign. --")
+            print(
+                f"-- Service account {TARGET_SERVICE_ACCOUNT_ID} updated successfully. --"
+            )
         else:
             print("-- Please provide valid input. Missing input paramaters. --")
     except requests.exceptions.HTTPError as http_err:
-        print(f"-- update_service_account HTTP error: {http_err.response.content.decode()} --")
+        print(
+            f"-- update_service_account HTTP error: {http_err.response.content.decode()} --"
+        )
         raise http_err
     except Exception as err:
         print(f"-- update_service_account error: {err} --")
