@@ -91,10 +91,10 @@ def assign_roles_to_service_account(role_ids, service_account_id):
 
 def main():
     try:
-        source_service_account_id = SOURCE_SERVICE_ACCOUNT_ID
         target_service_account_id = TARGET_SERVICE_ACCOUNT_ID
-        if source_service_account_id and target_service_account_id:
-            if UPDATE_SERVICE_ACCOUNT_CRITERIA == "UPDATE_METADATA":
+        if UPDATE_SERVICE_ACCOUNT_CRITERIA == "UPDATE_METADATA":
+            if source_service_account_id and target_service_account_id:
+                source_service_account_id = SOURCE_SERVICE_ACCOUNT_ID
                 source_service_account = get_source_service_account(
                 source_service_account_id
                 )
@@ -105,20 +105,23 @@ def main():
                     source_service_account, target_service_account
                 )
                 update_service_account(service_account_payload)
-            elif UPDATE_SERVICE_ACCOUNT_CRITERIA == "ASSIGN_POLICY":
-                if ROLE_IDS:
-                    role_ids = ast.literal_eval(ROLE_IDS)
-                    if len(role_ids) > 0:
-                        assign_roles_to_service_account(role_ids)
-                    else:
-                        print("-- Provided RoleIDs list is empty. --")
+            else:
+                print("-- Please provide valid input. Missing input paramaters. --")
+                exit(1)
+        elif UPDATE_SERVICE_ACCOUNT_CRITERIA == "ASSIGN_POLICY":
+            if ROLE_IDS:
+                role_ids = ast.literal_eval(ROLE_IDS)
+                if len(role_ids) > 0:
+                    assign_roles_to_service_account(role_ids, target_service_account_id)
                 else:
-                    print("-- Please provide Role IDs to assign. --")
-            print(
+                    print("-- Provided RoleIDs list is empty. --")
+            else:
+                print("-- Please provide valid input. Missing Role IDs to assign. --")
+                exit(1)
+        print(
                 f"-- Service account {TARGET_SERVICE_ACCOUNT_ID} updated successfully. --"
             )
-        else:
-            print("-- Please provide valid input. Missing input paramaters. --")
+        
     except requests.exceptions.HTTPError as http_err:
         print(
             f"-- update_service_account HTTP error: {http_err.response.content.decode()} --"

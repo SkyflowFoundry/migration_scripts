@@ -77,26 +77,28 @@ def assign_policy_to_role(policy_ids, role_id: list):
 
 def main():
     try:
-        source_role_id = SOURCE_ROLE_ID
         target_role_id = TARGET_ROLE_ID
-        if source_role_id and target_role_id:
-            if(UPDATE_ROLE_CRITERIA == "UPDATE_METADATA"):
+        if(UPDATE_ROLE_CRITERIA == "UPDATE_METADATA"):
+            source_role_id = SOURCE_ROLE_ID
+            if source_role_id and target_role_id:
                 source_role = get_source_role(source_role_id)
                 target_role = get_target_role(target_role_id)
                 role_payload = transform_role_payload(source_role, target_role)
                 update_role(role_payload)
-            elif(UPDATE_ROLE_CRITERIA == "ASSIGN_POLICY"):
-                if(POLICY_IDS):
-                    policy_ids = ast.literal_eval(POLICY_IDS)
-                    if(len(policy_ids) > 0):
-                        assign_policy_to_role(policy_ids)
-                    else:
-                        print("-- Provided PolicyIds list is empty. --")
+            else:
+                print("-- Please provide valid input. Missing input paramaters. --")
+                exit(1)
+        elif(UPDATE_ROLE_CRITERIA == "ASSIGN_POLICY"):
+            if(POLICY_IDS):
+                policy_ids = ast.literal_eval(POLICY_IDS)
+                if(len(policy_ids) > 0):
+                    assign_policy_to_role(policy_ids, [target_role_id])
                 else:
-                    print("-- Please provide policy IDs to assign. --")
-            print(f"-- Role {TARGET_ROLE_ID} updated successfully. --")
-        else:
-            print("-- Please provide valid input. Missing input paramaters. --")
+                    print("-- Provided PolicyIds list is empty. --")
+            else:
+                print("-- Please provide valid input. Missing policy IDs to assign. --")
+                exit(1)
+        print(f"-- Role {TARGET_ROLE_ID} updated successfully. --")
     except requests.exceptions.HTTPError as http_err:
         print(f"-- update_role HTTP error: {http_err.response.content.decode()} --")
         raise http_err
