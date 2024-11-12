@@ -104,11 +104,12 @@ def main():
                 service_account_payload = transform_service_account_payload(
                     source_service_account, target_service_account
                 )
+                print("-- Fetching source SA, and working on updating target SA. --")
                 update_service_account(service_account_payload)
             else:
                 print("-- Please provide valid input. Missing input paramaters. --")
                 exit(1)
-        elif UPDATE_SERVICE_ACCOUNT_CRITERIA == "ASSIGN_POLICY":
+        elif UPDATE_SERVICE_ACCOUNT_CRITERIA == "ASSIGN_ROLES":
             if ROLE_IDS:
                 role_ids = ast.literal_eval(ROLE_IDS)
                 if len(role_ids) > 0:

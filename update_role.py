@@ -84,6 +84,7 @@ def main():
                 source_role = get_source_role(source_role_id)
                 target_role = get_target_role(target_role_id)
                 role_payload = transform_role_payload(source_role, target_role)
+                print("-- Fetching source Role, and working on updating target Role. --")
                 update_role(role_payload)
             else:
                 print("-- Please provide valid input. Missing input paramaters. --")
