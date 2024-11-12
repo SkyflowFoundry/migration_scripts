@@ -93,8 +93,8 @@ def main():
     try:
         target_service_account_id = TARGET_SERVICE_ACCOUNT_ID
         if UPDATE_SERVICE_ACCOUNT_CRITERIA == "UPDATE_METADATA":
+            source_service_account_id = SOURCE_SERVICE_ACCOUNT_ID
             if source_service_account_id and target_service_account_id:
-                source_service_account_id = SOURCE_SERVICE_ACCOUNT_ID
                 source_service_account = get_source_service_account(
                 source_service_account_id
                 )
@@ -113,6 +113,7 @@ def main():
             if ROLE_IDS:
                 role_ids = ast.literal_eval(ROLE_IDS)
                 if len(role_ids) > 0:
+                    print("-- Assigning roles to SA. --")
                     assign_roles_to_service_account(role_ids, target_service_account_id)
                 else:
                     print("-- Provided RoleIDs list is empty. --")

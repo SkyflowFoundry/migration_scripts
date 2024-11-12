@@ -93,6 +93,7 @@ def main():
             if(POLICY_IDS):
                 policy_ids = ast.literal_eval(POLICY_IDS)
                 if(len(policy_ids) > 0):
+                    print("-- Assigning Policies to Role. --")
                     assign_policy_to_role(policy_ids, [target_role_id])
                 else:
                     print("-- Provided PolicyIds list is empty. --")
