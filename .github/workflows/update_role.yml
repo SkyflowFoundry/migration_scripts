@@ -4,8 +4,8 @@ on:
   workflow_dispatch:
     inputs:
       source_role_id:
-        description: "Source Role ID"
-        required: true
+        description: "Source Role ID (Required to UPDATE_METADATA)"
+        required: false
       target_role_id:
         description: "Target Role ID"
         required: true
@@ -21,8 +21,8 @@ on:
         description: "List of Policy IDs to assign"
         required: false
       source_account_access_token:
-        description: "Access token of the Source Account"
-        required: true
+        description: "Access token of the Source Account (Required to UPDATE_METADATA)"
+        required: false
       target_account_access_token:
         description: "Access token of the Target Account"
         required: true

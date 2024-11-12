@@ -94,20 +94,20 @@ def main():
         source_service_account_id = SOURCE_SERVICE_ACCOUNT_ID
         target_service_account_id = TARGET_SERVICE_ACCOUNT_ID
         if source_service_account_id and target_service_account_id:
-            source_service_account = get_source_service_account(
-                source_service_account_id
-            )
-            target_service_account = get_target_service_account(
-                target_service_account_id
-            )
-            service_account_payload = transform_service_account_payload(
-                source_service_account, target_service_account
-            )
             if UPDATE_SERVICE_ACCOUNT_CRITERIA == "UPDATE_METADATA":
+                source_service_account = get_source_service_account(
+                source_service_account_id
+                )
+                target_service_account = get_target_service_account(
+                    target_service_account_id
+                )
+                service_account_payload = transform_service_account_payload(
+                    source_service_account, target_service_account
+                )
                 update_service_account(service_account_payload)
             elif UPDATE_SERVICE_ACCOUNT_CRITERIA == "ASSIGN_POLICY":
                 if ROLE_IDS:
-                    role_ids = role_ids if role_ids else ast.literal_eval(ROLE_IDS)
+                    role_ids = ast.literal_eval(ROLE_IDS)
                     if len(role_ids) > 0:
                         assign_roles_to_service_account(role_ids)
                     else:

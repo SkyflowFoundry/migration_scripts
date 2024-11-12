@@ -80,14 +80,14 @@ def main():
         source_role_id = SOURCE_ROLE_ID
         target_role_id = TARGET_ROLE_ID
         if source_role_id and target_role_id:
-            source_role = get_source_role(source_role_id)
-            target_role = get_target_role(target_role_id)
-            role_payload = transform_role_payload(source_role, target_role)
             if(UPDATE_ROLE_CRITERIA == "UPDATE_METADATA"):
+                source_role = get_source_role(source_role_id)
+                target_role = get_target_role(target_role_id)
+                role_payload = transform_role_payload(source_role, target_role)
                 update_role(role_payload)
             elif(UPDATE_ROLE_CRITERIA == "ASSIGN_POLICY"):
                 if(POLICY_IDS):
-                    policy_ids = policy_ids if policy_ids else ast.literal_eval(POLICY_IDS)
+                    policy_ids = ast.literal_eval(POLICY_IDS)
                     if(len(policy_ids) > 0):
                         assign_policy_to_role(policy_ids)
                     else:
