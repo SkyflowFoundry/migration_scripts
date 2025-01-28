@@ -2,7 +2,6 @@ import ast
 import requests
 import os
 from migrate_policies import main as migrate_policies
-from migrate_vault_roles_and_policies import list_all_vault_custom_roles as list_all_roles
 
 
 SYSTEM_ROLES = ["VAULT_OWNER", "VAULT_EDITOR", "VAULT_VIEWER", "PIPELINE_MANAGER", "CONNECTION_MANAGER"]
@@ -81,6 +80,14 @@ def assign_policy_to_role(policy_ids, role_id: list):
         )
         response.raise_for_status()
     # return response.json()
+
+def list_all_roles() -> list:
+    response = requests.get(
+        f"{SOURCE_ENV_URL}/v1/roles?type=CUSTOM&resource.ID={SOURCE_VAULT_ID}&resource.type=VAULT",
+        headers=SOURCE_ACCOUNT_HEADERS,
+    )
+    response.raise_for_status()
+    return response.json()
 
 
 def transform_role_payload(source_resource):
