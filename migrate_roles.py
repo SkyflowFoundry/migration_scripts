@@ -2,7 +2,7 @@ import ast
 import requests
 import os
 from migrate_policies import main as migrate_policies
-from migrate_vault_roles_and_policies import list_all_vault_custom_roles
+from migrate_vault_roles_and_policies import list_all_vault_custom_roles as list_all_roles
 
 
 SYSTEM_ROLES = ["VAULT_OWNER", "VAULT_EDITOR", "VAULT_VIEWER", "PIPELINE_MANAGER", "CONNECTION_MANAGER"]
@@ -106,7 +106,7 @@ def main(role_ids=None):
         should_enable_custom_role_check = SKIP_ROLE_CREATION_IF_ROLE_EXISTS
         if MIGRATE_ALL_ROLES:
             if(SOURCE_VAULT_ID):
-                role_ids = list_all_vault_custom_roles()
+                role_ids = list_all_roles()
             else:
                 print("-- Please provide valid input. Source vault ID is required to migrate all roles --")
         else:
