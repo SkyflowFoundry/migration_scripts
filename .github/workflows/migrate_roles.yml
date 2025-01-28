@@ -4,8 +4,23 @@ on:
   workflow_dispatch:
     inputs:
       role_ids:
-        description: "List of RoleId's to be migrated"
-        required: true
+        description: "List of RoleId's to be migrated. Either of role_ids or migrate_all_roles is required."
+        required: false
+        default: []
+      migrate_all_roles:
+        type: boolean
+        description: "Migrates all the roles from source vault to target vault. Either of role_ids or migrate_all_roles is required. It is set to False by default."
+        required: false
+        default: false
+      source_vault_id:
+        type: string
+        description: "Source Vault ID. Required if migrate_all_roles if checked."
+        required: false
+      skip_role_creation_if_role_exists:
+        type: boolean
+        description: "Enable this to avoid duplicate role creation in case of migrating all the roles. It is set to False by default."
+        required: false
+        default: false
       target_vault_id:
         description: "Target Vault ID"
         required: true
@@ -35,6 +50,9 @@ jobs:
       - name: Run Python script
         env:
           ROLE_IDS: ${{ github.event.inputs.role_ids }}
+          MIGRATE_ALL_ROLES: ${{ github.event.inputs.migrate_all_roles }}
+          SKIP_ROLE_CREATION_IF_ROLE_EXISTS: ${{ github.event.inputs.skip_role_creation_if_role_exists }}
+          SOURCE_VAULT_ID: ${{ github.event.inputs.source_vault_id }}
           TARGET_VAULT_ID: ${{ github.event.inputs.target_vault_id }}
           SOURCE_ACCOUNT_AUTH: ${{ github.event.inputs.source_account_access_token }}
           TARGET_ACCOUNT_AUTH: ${{ github.event.inputs.target_account_access_token }}

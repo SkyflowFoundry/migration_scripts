@@ -14,6 +14,9 @@ SOURCE_ACCOUNT_AUTH = os.getenv("SOURCE_ACCOUNT_AUTH")
 TARGET_ACCOUNT_AUTH = os.getenv("TARGET_ACCOUNT_AUTH")
 SOURCE_ENV_URL = os.getenv("SOURCE_ENV_URL")
 TARGET_ENV_URL = os.getenv("TARGET_ENV_URL")
+MIGRATE_ALL_ROLES = os.getenv("MIGRATE_ALL_ROLES")
+SKIP_ROLE_CREATION_IF_ROLE_EXISTS = os.getenv("SKIP_ROLE_CREATION_IF_ROLE_EXISTS")
+SOURCE_VAULT_ID = os.getenv("SOURCE_VAULT_ID")
 
 SOURCE_ACCOUNT_HEADERS = {
     "X-SKYFLOW-ACCOUNT-ID": SOURCE_ACCOUNT_ID,
@@ -97,11 +100,24 @@ def transform_role_payload(source_resource):
     transformed_resource["resource"] = {"ID": TARGET_VAULT_ID, "type": "VAULT"}
     return transformed_resource
 
+def get_all_roles():
+    response = requests.get(
+        f"{SOURCE_ENV_URL}/v1/roles?&resource.type=VAULT&resource.ID={SOURCE_VAULT_ID}",
+        headers=SOURCE_ACCOUNT_HEADERS,
+    )
+    response.raise_for_status()
+    return response.json()
 
 def main(role_ids=None):
     try:
-        should_enable_custom_role_check = True if role_ids else False
-        role_ids = role_ids if role_ids else ast.literal_eval(ROLE_IDS)
+        should_enable_custom_role_check = SKIP_ROLE_CREATION_IF_ROLE_EXISTS
+        if MIGRATE_ALL_ROLES:
+            if(SOURCE_VAULT_ID):
+                role_ids = get_all_roles()
+            else:
+                print("-- Please provide valid input. Source vault ID is required to migrate all roles --")
+        else:
+            role_ids = ast.literal_eval(ROLE_IDS)
         roles_created = []
         for index, role_id in enumerate(role_ids):
             print(f"-- Working on Role: {index + 1}  --")
@@ -117,24 +133,24 @@ def main(role_ids=None):
                     print('-- checking if a role exists for the given vault --')
                     role_response = get_role_by_role_name(role_name)
                     if(len(role_response["roles"]) == 1):
-                        print("-- Found an existing CUSTOM_ROLE --")
+                        print("-- Found an existing CUSTOM_ROLE, skipping role creation --")
                         should_create_role = False
                         roles_created.append({"ID" : role_response["roles"][0]["ID"]})
                     else:
                         print("-- Role does not exist --") 
                 if(should_create_role):
                     role_payload = transform_role_payload(role_info)
-                    print(f"-- Creating Role --")
+                    print(f"-- Creating role --")
                     new_role = create_role(role_payload)
                     roles_created.append(new_role)
-                    print(f"-- Fetching Policies for the given Role --")
+                    print(f"-- Fetching policies for the given Role --")
                     role_policies = get_role_policies(role_id)
                     policy_ids = [policy["ID"] for policy in role_policies["policies"]]
                     no_of_policies = len(policy_ids)
                     if(no_of_policies == 0):
-                        print('-- No Policies found for the given role --')
+                        print('-- No policies found for the given role --')
                     else:
-                        print(f"-- Working on Policies migration. No. of policies found for given role: {no_of_policies} --")
+                        print(f"-- Working on policies migration. No. of policies found for given role: {no_of_policies} --")
                         policies_created = migrate_policies(policy_ids)
                         created_policy_ids = [policy["ID"] for policy in policies_created]
                         assign_policy_to_role(created_policy_ids, [new_role["ID"]])
