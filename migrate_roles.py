@@ -125,7 +125,7 @@ def main(role_ids=None):
             role_info = get_role(role_id)
             role_name = role_info["role"]["definition"]["name"]
             if(role_name in SYSTEM_ROLES):
-                print('-- SYSTEM_ROLE found, fetching SYSTEM_ROLE ID from target Vault --')
+                print('-- SYSTEM_ROLE found, skipping role creation --')
                 system_role = get_system_role(role_name)
                 roles_created.append({"ID": system_role["roles"][0]["ID"]})
             else:
@@ -141,10 +141,10 @@ def main(role_ids=None):
                         print("-- Role does not exist --") 
                 if(should_create_role):
                     role_payload = transform_role_payload(role_info)
-                    print(f"-- Creating role --")
+                    print(f"-- Creating role: {role_name} --")
                     new_role = create_role(role_payload)
                     roles_created.append(new_role)
-                    print(f"-- Fetching policies for the given Role --")
+                    print(f"-- Fetching policies for the given role --")
                     role_policies = get_role_policies(role_id)
                     policy_ids = [policy["ID"] for policy in role_policies["policies"]]
                     no_of_policies = len(policy_ids)
@@ -158,7 +158,7 @@ def main(role_ids=None):
                     print(f"-- Role migration completed: {role_name}. Source ROLE_ID: {role_id}, Target ROLE_ID: {new_role['ID']} --")        
         return roles_created
     except requests.exceptions.HTTPError as http_err:
-        print(f'-- Role creation failed for {role_id}. Role with name {role_name} already exists in target account. Please update this role name in your source account and try again. --')
+        print(f'-- Role creation failed for {role_name}, ID: {role_id}. --')
         print(f'-- migrate_roles HTTP error: {http_err.response.content.decode()} --')
         raise http_err
     except Exception as err:
