@@ -6,14 +6,13 @@ on:
       role_ids:
         description: "List of RoleId's to be migrated. Either of role_ids or migrate_all_roles is required."
         required: false
-        default: []
+        default: "[]"
       migrate_all_roles:
         type: boolean
         description: "Migrates all the roles from source vault to target vault. Either of role_ids or migrate_all_roles is required. It is set to False by default."
         required: false
         default: false
       source_vault_id:
-        type: string
         description: "Source Vault ID. Required if migrate_all_roles if checked."
         required: false
       skip_role_creation_if_role_exists:
