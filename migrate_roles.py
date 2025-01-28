@@ -113,14 +113,15 @@ def main(role_ids=None):
         should_enable_custom_role_check = SKIP_ROLE_CREATION_IF_ROLE_EXISTS
         if MIGRATE_ALL_ROLES:
             if(SOURCE_VAULT_ID):
-                role_ids = list_all_roles()
+                roles = list_all_roles()
+                role_ids = [role["ID"] for role in roles["roles"]]
             else:
                 print("-- Please provide valid input. Source vault ID is required to migrate all roles --")
         else:
             role_ids = ast.literal_eval(ROLE_IDS)
         roles_created = []
         for index, role_id in enumerate(role_ids):
-            print(f"-- Working on Role: {index + 1}  --")
+            print(f"-- Working on Role: {index + 1}, ID: {role_id}  --")
             role_info = get_role(role_id)
             role_name = role_info["role"]["definition"]["name"]
             if(role_name in SYSTEM_ROLES):
