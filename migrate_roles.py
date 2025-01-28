@@ -2,6 +2,7 @@ import ast
 import requests
 import os
 from migrate_policies import main as migrate_policies
+from migration_scripts.migrate_vault_roles_and_policies import list_all_vault_custom_roles
 
 
 SYSTEM_ROLES = ["VAULT_OWNER", "VAULT_EDITOR", "VAULT_VIEWER", "PIPELINE_MANAGER", "CONNECTION_MANAGER"]
@@ -100,20 +101,12 @@ def transform_role_payload(source_resource):
     transformed_resource["resource"] = {"ID": TARGET_VAULT_ID, "type": "VAULT"}
     return transformed_resource
 
-def get_all_roles():
-    response = requests.get(
-        f"{SOURCE_ENV_URL}/v1/roles?&resource.type=VAULT&resource.ID={SOURCE_VAULT_ID}",
-        headers=SOURCE_ACCOUNT_HEADERS,
-    )
-    response.raise_for_status()
-    return response.json()
-
 def main(role_ids=None):
     try:
         should_enable_custom_role_check = SKIP_ROLE_CREATION_IF_ROLE_EXISTS
         if MIGRATE_ALL_ROLES:
             if(SOURCE_VAULT_ID):
-                role_ids = get_all_roles()
+                role_ids = list_all_vault_custom_roles()
             else:
                 print("-- Please provide valid input. Source vault ID is required to migrate all roles --")
         else:
