@@ -2,7 +2,7 @@ import ast
 import requests
 import os
 from migrate_policies import main as migrate_policies
-from migration_scripts.migrate_vault_roles_and_policies import list_all_vault_custom_roles
+from migrate_vault_roles_and_policies import list_all_vault_custom_roles
 
 
 SYSTEM_ROLES = ["VAULT_OWNER", "VAULT_EDITOR", "VAULT_VIEWER", "PIPELINE_MANAGER", "CONNECTION_MANAGER"]
