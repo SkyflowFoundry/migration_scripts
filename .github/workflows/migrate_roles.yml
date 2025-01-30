@@ -4,12 +4,12 @@ on:
   workflow_dispatch:
     inputs:
       role_ids:
-        description: "List of RoleId's to be migrated. Either of role_ids or migrate_all_roles is required."
+        description: "List of RoleId's to be migrated."
         required: false
         default: "[]"
       migrate_all_roles:
         type: boolean
-        description: "Migrates all the roles from source vault to target vault. Either of role_ids or migrate_all_roles is required. It is set to False by default."
+        description: "Migrate all roles from source to target vault."
         required: false
         default: false
       source_vault_id:
@@ -17,7 +17,7 @@ on:
         required: false
       skip_role_creation_if_role_exists:
         type: boolean
-        description: "Enable this to avoid duplicate role creation in case of migrating all the roles. It is set to False by default."
+        description: "Skip role creation if role exists."
         required: false
         default: false
       target_vault_id:
