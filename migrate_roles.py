@@ -120,6 +120,7 @@ def main(role_ids=None):
         else:
             role_ids = ast.literal_eval(ROLE_IDS)
         roles_created = []
+        print("Debug -- ", role_ids, type(role_ids))
         for role_id in enumerate(role_ids):
             role_info = get_role(role_id)
             role_name = role_info["role"]["definition"]["name"]
@@ -155,10 +156,11 @@ def main(role_ids=None):
                         policies_created = migrate_policies(policy_ids)
                         created_policy_ids = [policy["ID"] for policy in policies_created]
                         assign_policy_to_role(created_policy_ids, [new_role["ID"]])
-                    print(f"-- Role migration completed: {role_name}. Source ROLE_ID: {role_id}, Target ROLE_ID: {new_role['ID']} --")        
+                    print(f"-- Role migration completed: {role_name}. Source ROLE_ID: {role_id}, Target ROLE_ID: {new_role['ID']} --")
+        print("-- Script executed successfully --")        
         return roles_created
     except requests.exceptions.HTTPError as http_err:
-        print(f'-- Role creation failed for {role_name}, ID: {role_id}. --')
+        print(f'-- Role creation failed for {role_name if role_name else ""}, ID: {role_id}. --')
         print(f'-- migrate_roles HTTP error: {http_err.response.content.decode()} --')
         raise http_err
     except Exception as err:
