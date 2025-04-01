@@ -27,6 +27,10 @@ Note: Using existing policies for a new role will result in duplicate name confl
 - **`role_ids`**: A list of role IDs to be migrated. Get Role Ids from Studio. Ex: ['role1','role2']
 - **`source_account_access_token`**: Access token of the source account.
 - **`target_account_access_token`**: Access token of the target account.
+- **`migrate_all_roles`**: If checked, migrates all the roles of the given source vault to the target vault.
+- **`source_vault_id`**: Source Vault ID. This is a required parameter if `migrate_all_roles` is checked.
+- **`skip_role_creation_if_role_exists`**: If checked, skips the role creation. Please note that this is check based on the ROLE_NAME.
+
 
 #### 3. Service Accounts Migration
 

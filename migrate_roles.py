@@ -120,11 +120,10 @@ def main(role_ids=None):
         else:
             role_ids = ast.literal_eval(ROLE_IDS)
         roles_created = []
-        print("Debug -- ", role_ids, type(role_ids))
-        for role_id in enumerate(role_ids):
+        for index, role_id in enumerate(role_ids):
             role_info = get_role(role_id)
             role_name = role_info["role"]["definition"]["name"]
-            print(f"-- Working on Role: {role_name}, ID: {role_id}  --")
+            print(f"-- Working on Role {index + 1}: {role_name}, ID: {role_id}  --")
             if(role_name in SYSTEM_ROLES):
                 print('-- SYSTEM_ROLE found, skipping role creation --')
                 system_role = get_system_role(role_name)
