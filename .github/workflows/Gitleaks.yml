@@ -1,0 +1,15 @@
+name: Gitleaks scan 
+on:
+  pull_request:
+    branches:
+      - main
+      
+permissions:
+  issues: write
+  pull-requests: write
+  contents: read
+  
+jobs:
+  call-gitleaks:
+    uses: SkyflowFoundry/.github/.github/workflows/Gitleaks Central workflow.yml@main
+    secrets: inherit
