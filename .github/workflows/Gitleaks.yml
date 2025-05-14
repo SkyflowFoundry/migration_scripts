@@ -1,4 +1,4 @@
-name: Gitleaks scan workflow call on PR
+name: Gitleaks scan 
 on:
   pull_request:
     branches:
