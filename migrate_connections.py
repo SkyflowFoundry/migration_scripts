@@ -59,6 +59,7 @@ def create_connection(connection):
 
 def transform_connection_payload(source_resource):
     transformed_resource = source_resource
+    transformed_resource["vaultID"] = TARGET_VAULT_ID
     if "BasicAudit" in transformed_resource.keys():
         del transformed_resource["BasicAudit"]
     for route in transformed_resource["routes"]:
