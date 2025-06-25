@@ -3,10 +3,13 @@ name: connections_migration
 on:
   workflow_dispatch:
     inputs:
-      connection_ids:
-        description: "List of ConnectionId's to be migrated."
-        required: false
-        default: "[]"
+      connections_config:
+        description: "Select connections config file"
+        default: None
+        type: choice
+        options:
+          - None
+          - dispute_vault
       migrate_all_connections:
         type: boolean
         description: "Migrates all connections from source to target vault."
@@ -15,13 +18,10 @@ on:
       source_vault_id:
         description: "Source Vault ID. Required if migrate_all_connections if checked."
         required: false
-      connections_config:
-        description: "Select connections config file"
-        default: None
-        type: choice
-        options:
-          - None
-          - dispute_vault
+      connection_ids:
+        description: "List of ConnectionId's to be migrated."
+        required: false
+        default: "[]"
       target_vault_id:
         description: "Target Vault ID"
         required: true
@@ -99,5 +99,5 @@ jobs:
           TARGET_ACCOUNT_ID: ${{ github.event.inputs.target_account_id != '' && github.event.inputs.target_account_id || vars.TARGET_ACCOUNT_ID }}
           SOURCE_ENV_URL: ${{ steps.map_envs.outputs.source_url }}
           TARGET_ENV_URL: ${{ steps.map_envs.outputs.target_url }}
-          CONNECTIONS_CONFIG: ${{ format('configs/connections/{}_connections.json', github.event.inputs.connections_config) }}
+          CONNECTIONS_CONFIG: configs/connections/${{ github.event.inputs.connections_config }}_connections.json
         run: python3 migrate_connections.py

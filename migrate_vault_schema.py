@@ -53,6 +53,7 @@ def main():
     try:
         print("-- Initializing Vault migration --")
         if VAULT_SCHEMA_CONFIG:
+            print(f"-- Fetching the schema from the config file --")
             with open(VAULT_SCHEMA_CONFIG, "r") as file:
                 content = file.read()
                 schema = json.loads(content)

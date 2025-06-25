@@ -1,9 +1,8 @@
 import os
 import requests
 import json
-from dotenv import load_dotenv
 
-load_dotenv()
+
 CONNECTION_IDS = os.getenv("CONNECTION_IDS")
 CONNECTIONS_CONFIG = os.getenv("CONNECTIONS_CONFIG")
 MIGRATE_ALL_CONNECTIONS = os.getenv("MIGRATE_ALL_CONNECTIONS")
@@ -72,6 +71,7 @@ def main(connection_ids=None):
         print("-- Initiating Connections migration --")
         connections = []
         if CONNECTIONS_CONFIG:
+            print(f"-- Fetching connections from the config file --")
             with open(CONNECTIONS_CONFIG, "r") as file:
                 content = file.read()
                 connections = json.loads(content)

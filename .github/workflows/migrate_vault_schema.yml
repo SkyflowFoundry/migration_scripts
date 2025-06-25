@@ -12,7 +12,7 @@ on:
           - dispute_vault
       source_vault_id:
         description: "Source Vault ID"
-        required: true
+        required: false
       workspace_id:
         description: "Workspace ID"
         required: true
