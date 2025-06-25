@@ -110,9 +110,11 @@ def transform_role_payload(source_resource):
 
 def main(role_ids=None):
     try:
+        print("-- Initializing Roles migration --")
         should_enable_custom_role_check = SKIP_ROLE_CREATION_IF_ROLE_EXISTS
         if MIGRATE_ALL_ROLES:
             if(SOURCE_VAULT_ID):
+                print(f"-- Fetching Roles for the vault {SOURCE_VAULT_ID}")
                 roles = list_all_roles()
                 role_ids = [role["ID"] for role in roles["roles"]]
             else:
@@ -131,7 +133,7 @@ def main(role_ids=None):
             else:
                 should_create_role = True
                 if(should_enable_custom_role_check):
-                    print('-- checking if a role exists for the given vault --')
+                    print('-- Checking if a role exists for the given vault --')
                     role_response = get_role_by_role_name(role_name)
                     if(len(role_response["roles"]) == 1):
                         print("-- Found an existing CUSTOM_ROLE, skipping role creation --")
@@ -155,8 +157,8 @@ def main(role_ids=None):
                         policies_created = migrate_policies(policy_ids)
                         created_policy_ids = [policy["ID"] for policy in policies_created]
                         assign_policy_to_role(created_policy_ids, [new_role["ID"]])
-                    print(f"-- Role migration completed: {role_name}. Source ROLE_ID: {role_id}, Target ROLE_ID: {new_role['ID']} --")
-        print("-- Script executed successfully --")        
+                    print(f"-- Role migrated successfully: {role_name}. Source ROLE_ID: {role_id}, Target ROLE_ID: {new_role['ID']} --")
+        print("-- Roles migration script executed successfully --")        
         return roles_created
     except requests.exceptions.HTTPError as http_err:
         print(f'-- Role creation failed for {role_name if role_name else ""}, ID: {role_id}. --')

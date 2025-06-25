@@ -69,17 +69,17 @@ def assign_roles_to_service_account(role_ids, service_account_id):
 
 
 def transform_service_account_payload(source_resource):
-    tramsformed_resource = source_resource
-    # tramsformed_resource["resource"] = {"ID": TARGET_VAULT_ID, "type": "VAULT"} // not require due to SA flattening change
-    del tramsformed_resource["serviceAccount"]["ID"]
-    del tramsformed_resource["serviceAccount"]["namespace"]
-    del tramsformed_resource["serviceAccount"]["BasicAudit"]
-    return tramsformed_resource
+    transformed_resource = source_resource
+    # transformed_resource["resource"] = {"ID": TARGET_VAULT_ID, "type": "VAULT"} // not require due to SA flattening change
+    del transformed_resource["serviceAccount"]["ID"]
+    del transformed_resource["serviceAccount"]["namespace"]
+    del transformed_resource["serviceAccount"]["BasicAudit"]
+    return transformed_resource
 
 
 def main(service_accounts_ids=None):
     try:
-        print("-- SERVICE ACCOUNTS MIGRATION --")
+        print("-- Initializing Service accounts migration --")
         service_accounts_ids = (
             service_accounts_ids
             if service_accounts_ids
@@ -87,15 +87,15 @@ def main(service_accounts_ids=None):
         )
         created_service_accounts = []
         for index, service_account_id in enumerate(service_accounts_ids):
-            print(f"-- Working on SA: {index + 1} --")
             service_account_resource = get_service_account(service_account_id)
+            print(f"-- Working on Service account: {index + 1}  {service_account_resource['serviceAccount']['name']} --")
             service_account_payload = transform_service_account_payload(
                 service_account_resource
             )
-            print("-- Creating SA --")
+            print("-- Creating Service account --")
             new_service_account = create_service_account(service_account_payload)
             created_service_accounts.append(new_service_account)
-            print(f"-- Fetching Roles for given SA --")
+            print(f"-- Fetching Roles --")
             service_account_roles = list_service_account_roles(service_account_id)
             service_account_roles_ids = [
                 service_account_role["role"]["ID"]
@@ -103,16 +103,16 @@ def main(service_accounts_ids=None):
             ]
             no_of_roles = len(service_account_roles_ids)
             if(no_of_roles == 0):
-                print("-- No Roles found for given SA --")
+                print(f"-- No Roles found for {service_account_resource['serviceAccount']['name']} --")
             else:
-                print(f"-- Working on Roles migration. No.of Roles for given SA: {no_of_roles} --")
+                print(f"-- Working on Roles migration. No.of Roles for {service_account_resource['serviceAccount']['name']}: {no_of_roles} --")
                 roles_created = migrate_roles(service_account_roles_ids)
                 created_role_ids = [role["ID"] for role in roles_created]
                 assign_roles_to_service_account(
                 created_role_ids, new_service_account["clientID"]
                 )
-            print(f"-- Service accounts migration completed: {service_account_resource['serviceAccount']['name']}. Source SERVICE_ACCOUNT_ID: {service_account_id}, Target SERVICE_ACCOUNT_ID: {new_service_account['clientID']} --")
-        print("-- Script executed successfully --")        
+            print(f"-- Service account migrated succesfully: {service_account_resource['serviceAccount']['name']}. Source SERVICE_ACCOUNT_ID: {service_account_id}, Target SERVICE_ACCOUNT_ID: {new_service_account['clientID']} --")
+        print("-- Service account migration script executed successfully --")        
         return created_service_accounts
     except requests.exceptions.HTTPError as http_err:
         print(

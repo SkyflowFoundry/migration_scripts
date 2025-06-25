@@ -26,7 +26,7 @@ def list_all_vault_custom_roles() -> list:
 
 def main():
     try:
-        print(f"-- Fetching all roles for the given Vault --")
+        print(f"-- Fetching roles for the vault {SOURCE_VAULT_ID} --")
         roles = list_all_vault_custom_roles()
         role_ids = [
             role["ID"]
@@ -38,7 +38,7 @@ def main():
         print("-- Working on Roles migration --")
         migrate_roles(role_ids)
         print(
-            f"-- Roles and Policies for given vault {SOURCE_VAULT_ID} are migrated successfully --"
+            f"-- Roles and Policies of vault {SOURCE_VAULT_ID} are migrated successfully --"
         )
     except requests.exceptions.HTTPError as http_err:
         print(f"-- migrate_vault_roles_and_policies HTTP error: {http_err.response.content.decode()} --")
