@@ -6,6 +6,7 @@ on:
       vault_schema_config:
         description: "Select vault schema config file"
         default: None
+        type: choice
         options:
           - None
           - dispute_vault
@@ -33,12 +34,15 @@ on:
       target_account_id:
         description: "Target Account ID. If not provided, will use the repository variable"
         required: false
-      source_env_url:
-        description: "Source Env URL. If not provided, will use the repository variable"
-        required: false
-      target_env_url:
-        description: "Target Env URL. If not provided, will use the repository variable"
-        required: false
+      env_url:
+        description: "Select source and target env"
+        type: choice
+        default: "Source: SANDBOX, Target: PRODUCTION"
+        options:
+          - "Source: SANDBOX, Target: PRODUCTION"
+          - "Source: SANDBOX, Target: SANDBOX"
+          - "Source: PRODUCTION, Target: PRODUCTION"
+          - "Source: PRODUCTION, Target: SANDBOX"
 
 jobs:
   execute-schema-migration-script:
@@ -56,6 +60,30 @@ jobs:
       - name: Install dependencies
         run: pip install requests
 
+      - name: Parse and map environment URLs
+        id: map_envs
+        shell: bash
+        run: |
+          input="${{ github.event.inputs.env_url }}"
+
+          source_name=$(echo "$input" | sed -n 's/Source: \([^,]*\),.*/\1/p' | xargs)
+          target_name=$(echo "$input" | sed -n 's/.*Target: \(.*\)/\1/p' | xargs)
+
+          get_env_url() {
+            case "$1" in
+              SANDBOX) echo "https://manage.skyflowapis-preview.com" ;;
+              PRODUCTION) echo "https://manage.skyflowapis.com" ;;
+              *) echo "Invalid environment: $1" >&2; exit 1 ;;
+            esac
+          }
+
+          # Resolve URLs
+          source_url=$(get_env_url "$source_name")
+          target_url=$(get_env_url "$target_name")
+
+          echo "source_url=$source_url" >> $GITHUB_OUTPUT
+          echo "target_url=$target_url" >> $GITHUB_OUTPUT
+
       - name: Run Python script
         env:
           SOURCE_VAULT_ID: ${{ github.event.inputs.source_vault_id }}
@@ -66,7 +94,7 @@ jobs:
           TARGET_ACCOUNT_AUTH: ${{ github.event.inputs.target_account_access_token }}
           SOURCE_ACCOUNT_ID: ${{ github.event.inputs.source_account_id != '' && github.event.inputs.source_account_id || vars.SOURCE_ACCOUNT_ID }}
           TARGET_ACCOUNT_ID: ${{ github.event.inputs.target_account_id != '' && github.event.inputs.target_account_id || vars.TARGET_ACCOUNT_ID }}
-          SOURCE_ENV_URL: ${{ github.event.inputs.source_env_url != '' && github.event.inputs.source_env_url || vars.SOURCE_ENV_URL }}
-          TARGET_ENV_URL: ${{ github.event.inputs.target_env_url != '' && github.event.inputs.target_env_url || vars.TARGET_ENV_URL }}
+          SOURCE_ENV_URL: ${{ steps.map_envs.outputs.source_url }}
+          TARGET_ENV_URL: ${{ steps.map_envs.outputs.target_url }}
           VAULT_SCHEMA_CONFIG: configs/vaults/${{ github.event.inputs.vault_schema_config }}_schema.json
         run: python3 migrate_vault_schema.py
