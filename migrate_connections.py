@@ -70,7 +70,7 @@ def main(connection_ids=None):
     try:
         print("-- Initiating Connections migration --")
         connections = []
-        if CONNECTIONS_CONFIG:
+        if CONNECTIONS_CONFIG != "None":
             print(f"-- Fetching connections from the config file --")
             with open(CONNECTIONS_CONFIG, "r") as file:
                 content = file.read()
