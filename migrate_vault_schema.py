@@ -1,5 +1,7 @@
 import requests
 import os
+import json
+import random
 
 SOURCE_VAULT_ID = os.getenv("SOURCE_VAULT_ID")
 SOURCE_ACCOUNT_ID = os.getenv("SOURCE_ACCOUNT_ID")
@@ -11,6 +13,7 @@ TARGET_ENV_URL = os.getenv("TARGET_ENV_URL")
 WORKSPACE_ID = os.getenv("WORKSPACE_ID")
 VAULT_NAME = os.getenv("VAULT_NAME")
 VAULT_DESCRIPTION = os.getenv("VAULT_DESCRIPTION")
+VAULT_SCHEMA_CONFIG = os.getenv("VAULT_SCHEMA_CONFIG")
 
 SOURCE_ACCOUNT_HEADERS = {
     "X-SKYFLOW-ACCOUNT-ID": SOURCE_ACCOUNT_ID,
@@ -36,8 +39,8 @@ def create_vault(create_vault_request_payload):
 
 def transform_payload(vault_details):
     create_vault_payload = {
-        "name": VAULT_NAME if VAULT_NAME else vault_details["name"],
-        "description": VAULT_DESCRIPTION if VAULT_DESCRIPTION else vault_details["description"],
+        "name": VAULT_NAME if VAULT_NAME else f"UntitledVault{random.randint(0,1000)}" if VAULT_SCHEMA_CONFIG else vault_details["name"],
+        "description": VAULT_DESCRIPTION if VAULT_DESCRIPTION else "" if VAULT_SCHEMA_CONFIG else vault_details["description"],
         "vaultSchema" : {
             "schemas": vault_details["schemas"],
             "tags": vault_details["tags"]
@@ -48,19 +51,31 @@ def transform_payload(vault_details):
     
 def main():
     try:
-        if SOURCE_VAULT_ID and WORKSPACE_ID:
+        print("-- Initializing Vault migration --")
+        if VAULT_SCHEMA_CONFIG:
+            with open(VAULT_SCHEMA_CONFIG, "r") as file:
+                content = file.read()
+                schema = json.loads(content)
+                vault_details = {
+                    "schemas": schema["schemas"],
+                    "tags": schema["tags"]
+                }
+        elif SOURCE_VAULT_ID:
             print(f"-- Fetching {SOURCE_VAULT_ID} vault details --")
-            vault_details = get_vault_details(SOURCE_VAULT_ID)
+            vault_details = get_vault_details(SOURCE_VAULT_ID)["vault"]
+        else:
+            print("-- Please provide source vault ID or select schema config file --")
+        if WORKSPACE_ID:
             print(f"-- Working on creating vault in target account --")
-            create_vault_request = transform_payload(vault_details["vault"])
+            create_vault_request = transform_payload(vault_details)
             create_vault_response = create_vault(create_vault_request)
-            print(f"-- Vault with ID {create_vault_response['ID']} has been created successfully in the target account. --")
-            if(os.getenv("MIGRATE_GOVERNANCE")):
+            print(f"-- Vault with ID {create_vault_response['ID']} has been created successfully in the target account --")
+            if os.getenv("MIGRATE_GOVERNANCE"):
                 env_file = os.getenv('GITHUB_ENV')
                 with open(env_file, "a") as file:
                     file.write(f"TARGET_VAULT_ID={create_vault_response['ID']}")
         else:
-            print("-- Please provide valid input. Missing WorkspaceId or VaultId. --")
+            print("-- Please provide valid input. Workspace ID is missing. --")
 
     except requests.exceptions.HTTPError as http_err:
         print(f"-- migrate_vault_schema HTTP error: {http_err.response.content.decode()} --")
