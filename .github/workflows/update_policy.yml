@@ -15,6 +15,18 @@ on:
       target_account_access_token:
         description: "Access token of the Target Account"
         required: true
+      source_account_id:
+        description: "Source Account ID. If not provided, will use the repository variable"
+        required: false
+      target_account_id:
+        description: "Target Account ID. If not provided, will use the repository variable"
+        required: false
+      source_env_url:
+        description: "Source Env URL. If not provided, will use the repository variable"
+        required: false
+      target_env_url:
+        description: "Target Env URL. If not provided, will use the repository variable"
+        required: false
 
 jobs:
   execute-update-policy-script:
@@ -38,8 +50,8 @@ jobs:
           TARGET_POLICY_ID: ${{ github.event.inputs.target_policy_id }}
           SOURCE_ACCOUNT_AUTH: ${{ github.event.inputs.source_account_access_token }}
           TARGET_ACCOUNT_AUTH: ${{ github.event.inputs.target_account_access_token }}
-          SOURCE_ACCOUNT_ID: ${{ vars.SOURCE_ACCOUNT_ID }}
-          TARGET_ACCOUNT_ID: ${{ vars.TARGET_ACCOUNT_ID }}
-          SOURCE_ENV_URL: ${{ vars.SOURCE_ENV_URL }}
-          TARGET_ENV_URL: ${{ vars.TARGET_ENV_URL }}
+          SOURCE_ACCOUNT_ID: ${{ github.event.inputs.source_account_id != '' && github.event.inputs.source_account_id || vars.SOURCE_ACCOUNT_ID }}
+          TARGET_ACCOUNT_ID: ${{ github.event.inputs.target_account_id != '' && github.event.inputs.target_account_id || vars.TARGET_ACCOUNT_ID }}
+          SOURCE_ENV_URL: ${{ github.event.inputs.source_env_url != '' && github.event.inputs.source_env_url || vars.SOURCE_ENV_URL }}
+          TARGET_ENV_URL: ${{ github.event.inputs.target_env_url != '' && github.event.inputs.target_env_url || vars.TARGET_ENV_URL }}
         run: python3 update_policy.py
