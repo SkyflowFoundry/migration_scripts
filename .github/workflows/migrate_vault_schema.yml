@@ -3,6 +3,15 @@ name: vault_schema_migration
 on:
   workflow_dispatch:
     inputs:
+      env_url:
+        description: "Select source and target env's"
+        type: choice
+        default: "Source: SANDBOX, Target: PRODUCTION"
+        options:
+          - "Source: SANDBOX, Target: PRODUCTION"
+          - "Source: SANDBOX, Target: SANDBOX"
+          - "Source: PRODUCTION, Target: PRODUCTION"
+          - "Source: PRODUCTION, Target: SANDBOX"
       vault_schema_config:
         description: "Select vault schema config file"
         default: None
@@ -34,15 +43,7 @@ on:
       target_account_id:
         description: "Target Account ID. If not provided, will use the repository variable"
         required: false
-      env_url:
-        description: "Select source and target env"
-        type: choice
-        default: "Source: SANDBOX, Target: PRODUCTION"
-        options:
-          - "Source: SANDBOX, Target: PRODUCTION"
-          - "Source: SANDBOX, Target: SANDBOX"
-          - "Source: PRODUCTION, Target: PRODUCTION"
-          - "Source: PRODUCTION, Target: SANDBOX"
+
 
 jobs:
   execute-schema-migration-script:
