@@ -82,7 +82,7 @@ def main(connection_ids=None):
             with open("configs/connections/connections.json", "r") as file:
                 content = file.read()
                 connections = json.loads(content)
-        elif MIGRATE_ALL_CONNECTIONS.lower() == "true":
+        elif MIGRATE_ALL_CONNECTIONS is not None and MIGRATE_ALL_CONNECTIONS.lower() == "true":
             if SOURCE_VAULT_ID:
                 print(f"-- Fetching all connections from the source vault --")
                 connections = list_connections(SOURCE_VAULT_ID)
