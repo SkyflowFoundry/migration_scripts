@@ -3,7 +3,6 @@ import os
 import requests
 import json
 
-
 CONNECTION_IDS = os.getenv("CONNECTION_IDS")
 CONNECTIONS_CONFIG = os.getenv("CONNECTIONS_CONFIG")
 MIGRATE_ALL_CONNECTIONS = os.getenv("MIGRATE_ALL_CONNECTIONS")
@@ -78,25 +77,27 @@ def main(connection_ids=None):
     try:
         print("-- Initiating Connections migration --")
         connections = []
-        if CONNECTIONS_CONFIG is not None and not CONNECTIONS_CONFIG.endswith("None_connections.json"):
+        if CONNECTIONS_CONFIG is not None and CONNECTIONS_CONFIG == "config_file":
             print(f"-- Fetching connections from the config file --")
-            with open(CONNECTIONS_CONFIG, "r") as file:
+            with open("configs/connections/connections.json", "r") as file:
                 content = file.read()
                 connections = json.loads(content)
-        elif MIGRATE_ALL_CONNECTIONS:
+        elif MIGRATE_ALL_CONNECTIONS.lower() == "true":
             if SOURCE_VAULT_ID:
+                print(f"-- Fetching all connections from the source vault --")
                 connections = list_connections(SOURCE_VAULT_ID)
             else:
                 print(
                     "-- Please provide valid input. Source vault ID is required to migrate all connections --"
                 )
+                return
         else:
-            connections = []
             connection_ids = (
                 connection_ids
                 if connection_ids
                 else ast.literal_eval(CONNECTION_IDS)
             )
+            print(f"-- Fetching connection details for the given connection IDs --")
             for connection_id in connection_ids:
                 connection = get_connection(connection_id)
                 connections.append(connection)

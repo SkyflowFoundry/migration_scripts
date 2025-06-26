@@ -18,7 +18,7 @@ on:
         type: choice
         options:
           - None
-          - dispute_vault
+          - config_file
       migrate_all_connections:
         type: boolean
         description: "Migrates all connections from source to target vault."
@@ -49,7 +49,7 @@ on:
 
 
 jobs:
-  execute-roles-migration-script:
+  execute-connections-migration-script:
     runs-on: ubuntu-latest
 
     steps:
@@ -100,5 +100,5 @@ jobs:
           TARGET_ACCOUNT_ID: ${{ github.event.inputs.target_account_id != '' && github.event.inputs.target_account_id || vars.TARGET_ACCOUNT_ID }}
           SOURCE_ENV_URL: ${{ steps.map_envs.outputs.source_url }}
           TARGET_ENV_URL: ${{ steps.map_envs.outputs.target_url }}
-          CONNECTIONS_CONFIG: configs/connections/${{ github.event.inputs.connections_config }}_connections.json
+          CONNECTIONS_CONFIG: ${{ github.event.inputs.connections_config }}
         run: python3 migrate_connections.py

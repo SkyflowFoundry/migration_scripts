@@ -18,7 +18,7 @@ on:
         type: choice
         options:
           - None
-          - dispute_vault
+          - config_file
       source_vault_id:
         description: "Source Vault ID"
         required: false
@@ -97,5 +97,5 @@ jobs:
           TARGET_ACCOUNT_ID: ${{ github.event.inputs.target_account_id != '' && github.event.inputs.target_account_id || vars.TARGET_ACCOUNT_ID }}
           SOURCE_ENV_URL: ${{ steps.map_envs.outputs.source_url }}
           TARGET_ENV_URL: ${{ steps.map_envs.outputs.target_url }}
-          VAULT_SCHEMA_CONFIG: configs/vaults/${{ github.event.inputs.vault_schema_config }}_schema.json
+          VAULT_SCHEMA_CONFIG: ${{ github.event.inputs.vault_schema_config }}
         run: python3 migrate_vault_schema.py
