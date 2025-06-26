@@ -1,3 +1,4 @@
+import ast
 import os
 import requests
 import json
@@ -44,6 +45,14 @@ def list_connections(vault_id):
     connections.extend(response.json()["ConnectionMappings"])
     return connections
 
+def get_connection(connection_id):
+    # /inboundRoutes can also fetch outbound connection details
+    response = requests.get(
+        f"{SOURCE_ENV_URL}/v1/gateway/inboundRoutes/{connection_id}",
+        headers=SOURCE_ACCOUNT_HEADERS,
+    )
+    response.raise_for_status()
+    return response.json()
 
 def create_connection(connection):
     route = "outboundRoutes" if connection["mode"] == "EGRESS" else "inboundRoutes"
@@ -52,8 +61,7 @@ def create_connection(connection):
         json=connection,
         headers=TARGET_ACCOUNT_HEADERS,
     )
-    response.raise_for_status()
-    return response.json()
+    return response
 
 
 def transform_connection_payload(source_resource):
@@ -70,7 +78,7 @@ def main(connection_ids=None):
     try:
         print("-- Initiating Connections migration --")
         connections = []
-        if not CONNECTIONS_CONFIG.endswith("None_connections.json"):
+        if CONNECTIONS_CONFIG is not None and not CONNECTIONS_CONFIG.endswith("None_connections.json"):
             print(f"-- Fetching connections from the config file --")
             with open(CONNECTIONS_CONFIG, "r") as file:
                 content = file.read()
@@ -84,24 +92,31 @@ def main(connection_ids=None):
                 )
         else:
             connections = []
-            # (ToDo) iterate over connection IDs and fetch connection details
-            # connection_ids = (
-            #     connection_ids
-            #     if connection_ids
-            #     else ast.literal_eval(CONNECTION_IDS)
-            # )
+            connection_ids = (
+                connection_ids
+                if connection_ids
+                else ast.literal_eval(CONNECTION_IDS)
+            )
+            for connection_id in connection_ids:
+                connection = get_connection(connection_id)
+                connections.append(connection)
         created_connections = []
         for index, connection in enumerate(connections):
-            print(f"-- Working on connection: {index + 1} {connection["name"]} --")
+            print(f"-- Working on connection: {index + 1}. {connection["name"]} --")
             connection_payload = transform_connection_payload(connection)
-            new_connection = create_connection(connection_payload)
-            created_connections.append(new_connection)
-            # fetch connection roles
-            # create service account and assign connection invoker role
-            print(
-                f"-- Connection migrated successfully: {connection['name']}. Source CONNECTION_ID: {connection['ID']}, Target CONNECTION_ID: {new_connection['ID']} --"
-            )
-        print("-- Connections migration script executed successfully --")
+            create_connection_response = create_connection(connection_payload)
+            if create_connection_response.status_code == 200:
+                created_connection = create_connection_response.json()
+                created_connections.append(created_connection)
+                # fetch connection roles
+                # create service account and assign connection invoker role
+                print(
+                f"-- Connection migrated successfully: {connection['name']}. Source CONNECTION_ID: {connection['ID']}, Target CONNECTION_ID: {created_connection['ID']} --"
+                )
+            else:
+                print(f"-- Connection migration failed: {connection['name']}. {create_connection_response.json()}")
+        print(f"-- {len(created_connections)} out of {len(connections)} were created successfully. --") 
+        print("-- Connections migration script executed successfully. --")
     except requests.exceptions.HTTPError as http_err:
         print(
             f"-- migrate_connections HTTP error: {http_err.response.content.decode()} --"
