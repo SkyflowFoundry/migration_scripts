@@ -119,8 +119,8 @@ def main(connection_ids=None):
                 f"-- Connection migrated successfully: {connection['name']}. Source CONNECTION_ID: {connection['ID']}, Target CONNECTION_ID: {created_connection['ID']} --"
                 )
             else:
-                print(f"-- Connection migration failed: {connection['name']}. {create_connection_response.json()}")
-        print(f"-- {len(created_connections)} out of {len(connections)} were created successfully. --") 
+                print(f"-- Connection migration failed: {create_connection_response.status_code}. {create_connection_response.content}")
+        print(f"-- {len(created_connections)} out of {len(connections)} connections were created successfully. --") 
         print("-- Connections migration script executed successfully. --")
     except requests.exceptions.HTTPError as http_err:
         print(
