@@ -78,11 +78,14 @@ def main(connection_ids=None):
     try:
         print("-- Initiating Connections migration --")
         connections = []
-        if CONNECTIONS_CONFIG is not None and CONNECTIONS_CONFIG == "config_file":
+        if CONNECTIONS_CONFIG is not None and CONNECTIONS_CONFIG != "None":
             print(f"-- Fetching connections from the config file --")
             with open("configs/connections/connections.json", "r") as file:
                 content = file.read()
                 connections = json.loads(content)
+            if CONNECTIONS_CONFIG == "Mastercom" or CONNECTIONS_CONFIG == "Visa Resolve Online":
+                if connections[0]["name"] == CONNECTIONS_CONFIG:
+                    connections = [connections[0]]
         elif MIGRATE_ALL_CONNECTIONS is not None and MIGRATE_ALL_CONNECTIONS.lower() == "true":
             if SOURCE_VAULT_ID:
                 print(f"-- Fetching all connections from the source vault --")

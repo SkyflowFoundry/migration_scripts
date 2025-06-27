@@ -18,7 +18,9 @@ on:
         type: choice
         options:
           - None
-          - config_file
+          - Mastercom
+          - Visa Resolve Online
+          - Both
       migrate_all_connections:
         type: boolean
         description: "Migrates all connections from source to target vault."
