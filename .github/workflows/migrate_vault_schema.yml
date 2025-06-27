@@ -32,8 +32,8 @@ on:
         description: "Description for the target vault. If not provided, source vault description will be used"
         required: false
       source_account_access_token:
-        description: "Access token of the Source account"
-        required: true
+        description: "Access token of the Source Account. (Not required, if config file is selected)"
+        required: false
       target_account_access_token:
         description: "Access token of the Target account. Make sure to use a user generated access token from Studio."
         required: true

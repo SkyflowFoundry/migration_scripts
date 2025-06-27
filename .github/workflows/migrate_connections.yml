@@ -35,8 +35,8 @@ on:
         description: "Target Vault ID"
         required: true
       source_account_access_token:
-        description: "Access token of the Source Account"
-        required: true
+        description: "Access token of the Source Account. (Not required, if config file is selected)"
+        required: false
       target_account_access_token:
         description: "Access token of the Target Account"
         required: true
