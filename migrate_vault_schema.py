@@ -54,7 +54,7 @@ def main():
         print("-- Initializing Vault migration --")
         if VAULT_SCHEMA_CONFIG is not None and VAULT_SCHEMA_CONFIG == "config_file":
             print(f"-- Fetching the schema from the config file --")
-            with open("configs/connections/schema.json", "r") as file:
+            with open("configs/vaults/schema.json", "r") as file:
                 content = file.read()
                 schema = json.loads(content)
                 vault_details = {
