@@ -64,7 +64,7 @@ Note: This script does not migrate Service accounts of the given vault. Service 
 
 Use this script to create a vault with the source vault schema in the target account. It accepts both `source_vault_id` and `config_file` file to fetch the schema. `config_file` takes the priority over `source_vault_id`.
 
-Note: Please note that if all values are provided `config_file` will take the priority and rest of the paramaters will be ignored. Likewise if migrate_all_connections is checked, `connection_ids` parameter will be ignored.
+Note: Please note that if all values are provided `config_file` will take the priority and rest of the parameters will be ignored. 
 
 ##### Parameters:
 - **`source_and_target_env`**: Source and Target Env's
@@ -97,7 +97,7 @@ Migrates connections from source vault to the target vault. Source input can be 
 - Source vault ID. This migrates all the connections under the source vault.
 - List of connections IDs.
 
-Note: Please note that if all values are provided `config_file` will take the priority and rest of the paramaters will be ignored. Likewise if `migrate_all_connections` is checked, `connection_ids` parameter will be ignored.
+Note: Please note that if all values are provided `config_file` will take the priority and rest of the parameters will be ignored. Likewise if `migrate_all_connections` is checked, `connection_ids` parameter will be ignored.
 
 ##### Parameters:
 - **`source_and_target_env`**: Source and Target Env's
@@ -116,6 +116,10 @@ Note: Please note that if all values are provided `config_file` will take the pr
 - Migration of connections associated with functions is not supported.
 
 ## Steps to run the workflows
+
+### Prerequisites
+
+- A GitHub account is required to fork the repository and run the workflows.
 
 ### Running actions on your fork
 
