@@ -21,7 +21,7 @@ This section describes how to create connections and routes from a config file t
 
 | Parameter | Description |
 |-----------|-------------|
-| `source_and_target_env` | Source and Target environments |
+| `source_and_target_env` | Source and Target environments. Ex: `Source:SANDBOX,Target:PRODUCTION`  |
 | `config_file` | Connections configurations file. The config file should be present at `configs/connections/connections.json` |
 | `target_vault_id` | Target Vault ID |
 | `target_account_access_token` | Access token of the target account |
@@ -45,10 +45,10 @@ Ensure the following repository variables are set before running the workflows:
 
 | Variable | Description |
 |----------|-------------|
-| `SOURCE_ACCOUNT_ID` | Account ID for the source vault |
-| `TARGET_ACCOUNT_ID` | Account ID for the target vault |
+| `SOURCE_ACCOUNT_ID` | Account ID for the source vault. Ex: `ju95b898u3a0421uy789342d5d5fjh5d` |
+| `TARGET_ACCOUNT_ID` | Account ID for the target vault. Ex: `ij95bnh633a0421uy789342d5d5fj9yd` |
 
-> **Note**: You can also provide these values during workflow execution.
+> **Note**: AccountID can be retrieved from Studio. You can also provide these values during workflow execution.
 
 ### Step 2: Run the Workflow
 
