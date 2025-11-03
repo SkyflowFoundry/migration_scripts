@@ -23,11 +23,17 @@ def test_main_update_metadata(mock_patch, mock_get, mock_post, monkeypatch):
     monkeypatch.setattr(ur, "SOURCE_ENV_URL", "https://s")
     monkeypatch.setattr(ur, "TARGET_ENV_URL", "https://t")
 
-    g1 = MagicMock(); g1.raise_for_status.return_value = None; g1.json.return_value = {"role": {"definition": {"name": "N", "displayName": "D", "description": "d"}}}
-    g2 = MagicMock(); g2.raise_for_status.return_value = None; g2.json.return_value = {"role": {"ID": "t1"}}
+    g1 = MagicMock()
+    g1.raise_for_status.return_value = None
+    g1.json.return_value = {"role": {"definition": {"name": "N", "displayName": "D", "description": "d"}}}
+    g2 = MagicMock()
+    g2.raise_for_status.return_value = None
+    g2.json.return_value = {"role": {"ID": "t1"}}
     mock_get.side_effect = [g1, g2]
 
-    p = MagicMock(); p.raise_for_status.return_value = None; p.json.return_value = {"ok": True}
+    p = MagicMock()
+    p.raise_for_status.return_value = None
+    p.json.return_value = {"ok": True}
     mock_patch.return_value = p
 
     ur.main()

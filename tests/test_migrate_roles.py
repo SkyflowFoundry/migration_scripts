@@ -188,7 +188,7 @@ def test_custom_role_check_does_not_exist(mock_get, mock_post, monkeypatch):
     mock_post.return_value = create_post
 
     out = mr.main()
-    assert any(r.get("ID") == "new-role" for r in out)  # pragma: no cover
+    assert any(r.get("ID") == "new-role" for r in out)
 
 
 @patch("migrate_roles.requests.post")

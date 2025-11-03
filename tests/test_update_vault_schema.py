@@ -12,7 +12,9 @@ def test_main_success(mock_get, mock_patch, monkeypatch):
     monkeypatch.setattr(uvs, "SOURCE_ENV_URL", "https://s")
     monkeypatch.setattr(uvs, "TARGET_ENV_URL", "https://t")
 
-    g = MagicMock(); g.raise_for_status.return_value = None; g.json.return_value = {"vault": {"name": "V", "description": "D", "schemas": [], "tags": []}}
+    g = MagicMock()
+    g.raise_for_status.return_value = None
+    g.json.return_value = {"vault": {"name": "V", "description": "D", "schemas": [], "tags": []}}
     mock_get.return_value = g
 
     p = MagicMock(); p.raise_for_status.return_value = None; p.json.return_value = {"ID": "tv"}
@@ -55,7 +57,9 @@ def test_main_generic_exception(monkeypatch):
     monkeypatch.setattr(uvs, "TARGET_VAULT_ID", "tv", raising=False)
     monkeypatch.setattr(uvs, "SOURCE_ENV_URL", "https://s")
     monkeypatch.setattr(uvs, "TARGET_ENV_URL", "https://t")
-    g = MagicMock(); g.raise_for_status.return_value = None; g.json.return_value = {"vault": {"name": "V", "description": "D", "schemas": [], "tags": []}}
+    g = MagicMock()
+    g.raise_for_status.return_value = None
+    g.json.return_value = {"vault": {"name": "V", "description": "D", "schemas": [], "tags": []}}
     with patch("update_vault_schema.requests.get", return_value=g):
         with patch("update_vault_schema.update_vault", side_effect=Exception("boom")):
             with pytest.raises(SystemExit):
