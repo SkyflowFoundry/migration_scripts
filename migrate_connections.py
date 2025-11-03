@@ -103,7 +103,7 @@ def main(connection_ids=None):
                 connections.append(connection)
         created_connections = []
         for index, connection in enumerate(connections):
-            print(f"-- Working on connection: {index + 1}. {connection["name"]} --")
+            print(f"-- Working on connection: {index + 1}. {connection['name']} --")
             connection_payload = transform_connection_payload(connection)
             create_connection_response = create_connection(connection_payload)
             if create_connection_response.status_code == 200:
