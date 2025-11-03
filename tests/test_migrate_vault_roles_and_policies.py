@@ -10,7 +10,9 @@ import migrate_vault_roles_and_policies as mvrp
 def test_main_success(mock_get, mock_migrate_roles, monkeypatch):
     monkeypatch.setattr(mvrp, "SOURCE_VAULT_ID", "sv", raising=False)
     monkeypatch.setattr(mvrp, "SOURCE_ENV_URL", "https://s")
-    roles_resp = MagicMock(); roles_resp.raise_for_status.return_value = None; roles_resp.json.return_value = {"roles": [{"ID": "r1"}, {"ID": "r2"}]}
+    roles_resp = MagicMock()
+    roles_resp.raise_for_status.return_value = None
+    roles_resp.json.return_value = {"roles": [{"ID": "r1"}, {"ID": "r2"}]}
     mock_get.return_value = roles_resp
 
     mvrp.main()
@@ -22,6 +24,7 @@ def test_main_http_error(monkeypatch):
         content = b"boom"
 
     err = requests.exceptions.HTTPError(response=Resp())
+
     def raise_err():
         raise err
 
@@ -34,7 +37,11 @@ def test_main_http_error(monkeypatch):
 
 def test_main_generic_exception(monkeypatch):
     # Cause a non-HTTP exception and ensure SystemExit (lines 46-48)
-    monkeypatch.setattr(mvrp, "list_all_vault_custom_roles", lambda: (_ for _ in ()).throw(ValueError("x")))
+    monkeypatch.setattr(
+        mvrp,
+        "list_all_vault_custom_roles",
+        lambda: (_ for _ in ()).throw(ValueError("x")),
+    )
     with pytest.raises(SystemExit):
         mvrp.main()
 
@@ -42,6 +49,7 @@ def test_main_generic_exception(monkeypatch):
 def test_run_as_script(monkeypatch):
     # Run module as script to cover line 52
     import runpy, requests as _requests, types, sys
+
     monkeypatch.setenv("SOURCE_VAULT_ID", "sv")
     monkeypatch.setenv("SOURCE_ENV_URL", "https://s")
     # Dummy migrate_roles.main to avoid side effects and assert it was called
@@ -49,7 +57,9 @@ def test_run_as_script(monkeypatch):
     dummy = types.SimpleNamespace(main=dummy_main)
     sys.modules["migrate_roles"] = dummy
 
-    r = MagicMock(); r.raise_for_status.return_value = None; r.json.return_value = {"roles": []}
+    r = MagicMock()
+    r.raise_for_status.return_value = None
+    r.json.return_value = {"roles": []}
     with patch.object(_requests, "get", return_value=r) as mget:
         runpy.run_module("migrate_vault_roles_and_policies", run_name="__main__")
         # Should fetch once and call migrate_roles with an empty list

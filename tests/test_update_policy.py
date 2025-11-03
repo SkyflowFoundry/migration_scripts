@@ -59,4 +59,3 @@ def test_transform_policy_payload_handles_update_and_new_rules(monkeypatch):
     # Check structure for one
     names = {r["name"] for r in payload["ruleParams"]}
     assert names == {"R2", "R3"}
-

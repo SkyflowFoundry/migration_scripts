@@ -22,7 +22,9 @@ def test_transform_service_account_payload_strips_fields():
 @patch("migrate_service_accounts.migrate_roles")
 @patch("migrate_service_accounts.requests.post")
 @patch("migrate_service_accounts.requests.get")
-def test_main_creates_sa_and_assigns_roles(mock_get, mock_post, mock_migrate_roles, monkeypatch):
+def test_main_creates_sa_and_assigns_roles(
+    mock_get, mock_post, mock_migrate_roles, monkeypatch
+):
     monkeypatch.setattr(msa, "SOURCE_ENV_URL", "https://s")
     monkeypatch.setattr(msa, "TARGET_ENV_URL", "https://t")
 
@@ -62,6 +64,7 @@ def test_main_creates_sa_and_assigns_roles(mock_get, mock_post, mock_migrate_rol
     created = msa.main(service_accounts_ids=["sa1"])
     assert created and created[0]["clientID"] == "new-sa"
 
+
 @patch("migrate_service_accounts.requests.post")
 @patch("migrate_service_accounts.requests.get")
 def test_main_no_roles_found(mock_get, mock_post, monkeypatch):
@@ -69,11 +72,24 @@ def test_main_no_roles_found(mock_get, mock_post, monkeypatch):
     monkeypatch.setattr(msa, "TARGET_ENV_URL", "https://t")
     monkeypatch.setattr(msa, "SERVICE_ACCOUNT_IDS", "['sa1']", raising=False)
 
-    get_sa = MagicMock(); get_sa.raise_for_status.return_value = None; get_sa.json.return_value = {"serviceAccount": {"ID": "orig", "namespace": "n", "BasicAudit": {}, "name": "SA"}}
-    list_empty = MagicMock(); list_empty.raise_for_status.return_value = None; list_empty.json.return_value = {"roleToResource": []}
+    get_sa = MagicMock()
+    get_sa.raise_for_status.return_value = None
+    get_sa.json.return_value = {
+        "serviceAccount": {
+            "ID": "orig",
+            "namespace": "n",
+            "BasicAudit": {},
+            "name": "SA",
+        }
+    }
+    list_empty = MagicMock()
+    list_empty.raise_for_status.return_value = None
+    list_empty.json.return_value = {"roleToResource": []}
     mock_get.side_effect = [get_sa, list_empty]
 
-    create_sa = MagicMock(); create_sa.raise_for_status.return_value = None; create_sa.json.return_value = {"clientID": "new-sa"}
+    create_sa = MagicMock()
+    create_sa.raise_for_status.return_value = None
+    create_sa.json.return_value = {"clientID": "new-sa"}
     mock_post.return_value = create_sa
 
     out = msa.main()
@@ -98,9 +114,24 @@ def test_main_http_error(monkeypatch):
 def test_generic_exception_branch(monkeypatch):
     # Trigger generic except (122-124)
     monkeypatch.setattr(msa, "SERVICE_ACCOUNT_IDS", "['sa1']", raising=False)
-    monkeypatch.setattr(msa, "get_service_account", lambda _id: {"serviceAccount": {"ID": "orig", "namespace": "n", "BasicAudit": {}, "name": "SA"}})
+    monkeypatch.setattr(
+        msa,
+        "get_service_account",
+        lambda _id: {
+            "serviceAccount": {
+                "ID": "orig",
+                "namespace": "n",
+                "BasicAudit": {},
+                "name": "SA",
+            }
+        },
+    )
     monkeypatch.setattr(msa, "transform_service_account_payload", lambda x: x)
-    monkeypatch.setattr(msa, "create_service_account", lambda x: (_ for _ in ()).throw(Exception("boom")))
+    monkeypatch.setattr(
+        msa,
+        "create_service_account",
+        lambda x: (_ for _ in ()).throw(Exception("boom")),
+    )
     with pytest.raises(Exception):
         msa.main()
 
@@ -109,6 +140,7 @@ def test_run_as_script(monkeypatch):
     # Cover line 128
     import runpy
     import requests as _requests
+
     monkeypatch.setenv("SERVICE_ACCOUNT_IDS", "[]")
     with patch.object(_requests, "get") as g, patch.object(_requests, "post") as p:
         runpy.run_module("migrate_service_accounts", run_name="__main__")

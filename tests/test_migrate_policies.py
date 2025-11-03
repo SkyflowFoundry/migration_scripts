@@ -55,7 +55,9 @@ def test_transform_policy_payload_builds_rule_params(monkeypatch):
     assert len(out["ruleParams"]) == 3
     # Validate one conversion
     col_rule = out["ruleParams"][0]
-    assert "columnRuleParams" in col_rule and col_rule["columnRuleParams"]["columns"][0].endswith("users.email")
+    assert "columnRuleParams" in col_rule and col_rule["columnRuleParams"]["columns"][
+        0
+    ].endswith("users.email")
 
 
 @patch("migrate_policies.requests.post")
@@ -114,7 +116,11 @@ def test_main_http_error(monkeypatch):
 
 def test_main_generic_exception(monkeypatch):
     # Cause transform to fail with KeyError to hit generic except (111-113)
-    monkeypatch.setattr(mp, "transform_policy_payload", lambda _: (_ for _ in ()).throw(Exception("boom")))
+    monkeypatch.setattr(
+        mp,
+        "transform_policy_payload",
+        lambda _: (_ for _ in ()).throw(Exception("boom")),
+    )
     with pytest.raises(Exception):
         mp.main(policy_ids=["p1"])
 
@@ -129,10 +135,35 @@ def test_run_as_script(monkeypatch):
     monkeypatch.setenv("SOURCE_ENV_URL", "https://s")
     monkeypatch.setenv("TARGET_ENV_URL", "https://t")
 
-    src = MagicMock(); src.raise_for_status.return_value = None; src.json.return_value = {"policy": {"ID": "p1", "namespace": "n", "status": "A", "BasicAudit": {}, "members": [], "rules": [{"ID": "r", "name": "R", "ruleExpression": "x", "actions": ["POLICY.read"], "resources": ["vault:v/table:t/column:c"], "resourceType": "COLUMN", "dlpFormat": None}]}}
-    tgt = MagicMock(); tgt.raise_for_status.return_value = None; tgt.json.return_value = {"ID": "np"}
+    src = MagicMock()
+    src.raise_for_status.return_value = None
+    src.json.return_value = {
+        "policy": {
+            "ID": "p1",
+            "namespace": "n",
+            "status": "A",
+            "BasicAudit": {},
+            "members": [],
+            "rules": [
+                {
+                    "ID": "r",
+                    "name": "R",
+                    "ruleExpression": "x",
+                    "actions": ["POLICY.read"],
+                    "resources": ["vault:v/table:t/column:c"],
+                    "resourceType": "COLUMN",
+                    "dlpFormat": None,
+                }
+            ],
+        }
+    }
+    tgt = MagicMock()
+    tgt.raise_for_status.return_value = None
+    tgt.json.return_value = {"ID": "np"}
 
-    with patch.object(_requests, "get", return_value=src) as mget, patch.object(_requests, "post", return_value=tgt) as mpost:
+    with patch.object(_requests, "get", return_value=src) as mget, patch.object(
+        _requests, "post", return_value=tgt
+    ) as mpost:
         runpy.run_module("migrate_policies", run_name="__main__")
         assert mget.call_count >= 1
         assert mpost.call_count >= 1

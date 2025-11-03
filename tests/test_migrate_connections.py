@@ -11,9 +11,7 @@ def test_transform_connection_payload_removes_audit_and_invocation(monkeypatch):
         "name": "Conn",
         "mode": "EGRESS",
         "vaultID": "source-vault",
-        "routes": [
-            {"path": "/x", "method": "GET", "invocationURL": "https://example"}
-        ],
+        "routes": [{"path": "/x", "method": "GET", "invocationURL": "https://example"}],
         "BasicAudit": {"CreatedBy": "u"},
     }
     out = mc.transform_connection_payload(source)
@@ -39,8 +37,8 @@ def test_main_with_config_creates_connection(mock_post, monkeypatch, tmp_path):
     sample = (
         "[\n"
         "  {\n"
-        "    \"ID\": \"c1\", \"name\": \"Conn\", \"mode\": \"EGRESS\", \"vaultID\": \"sv\",\n"
-        "    \"routes\": [{\"path\": \"/p\", \"method\": \"GET\", \"invocationURL\": \"u\"}]\n"
+        '    "ID": "c1", "name": "Conn", "mode": "EGRESS", "vaultID": "sv",\n'
+        '    "routes": [{"path": "/p", "method": "GET", "invocationURL": "u"}]\n'
         "  }\n"
         "]"
     )
@@ -150,21 +148,26 @@ def test_run_as_script_config_file(monkeypatch):
     monkeypatch.setenv("SOURCE_ACCOUNT_ID", "sacc")
     monkeypatch.setenv("SOURCE_ACCOUNT_AUTH", "stok")
     monkeypatch.setenv("SOURCE_ENV_URL", "https://s")
-    sample = (
-        "[\n  {\n    \"ID\": \"c1\", \"name\": \"Conn\", \"mode\": \"EGRESS\", \"vaultID\": \"sv\",\n    \"routes\": [{\"path\": \"/p\", \"method\": \"GET\", \"invocationURL\": \"u\"}]\n  }\n]"
-    )
+    sample = '[\n  {\n    "ID": "c1", "name": "Conn", "mode": "EGRESS", "vaultID": "sv",\n    "routes": [{"path": "/p", "method": "GET", "invocationURL": "u"}]\n  }\n]'
     with patch("builtins.open", mock_open(read_data=sample)):
         with patch.object(_requests, "post") as mpost:
-            r = MagicMock(); r.status_code = 200; r.json.return_value = {"ID": "new"}
+            r = MagicMock()
+            r.status_code = 200
+            r.json.return_value = {"ID": "new"}
             mpost.return_value = r
             runpy.run_module("migrate_connections", run_name="__main__")
             assert mpost.call_count >= 1
 
+
 @patch("migrate_connections.requests.get")
 def test_list_connections_combines_inbound_and_outbound(mock_get, monkeypatch):
     monkeypatch.setattr(mc, "SOURCE_ENV_URL", "https://s")
-    r1 = MagicMock(); r1.raise_for_status.return_value = None; r1.json.return_value = {"ConnectionMappings": ["o1"]}
-    r2 = MagicMock(); r2.raise_for_status.return_value = None; r2.json.return_value = {"ConnectionMappings": ["i1"]}
+    r1 = MagicMock()
+    r1.raise_for_status.return_value = None
+    r1.json.return_value = {"ConnectionMappings": ["o1"]}
+    r2 = MagicMock()
+    r2.raise_for_status.return_value = None
+    r2.json.return_value = {"ConnectionMappings": ["i1"]}
     mock_get.side_effect = [r1, r2]
     out = mc.list_connections("v")
     assert out == ["o1", "i1"]
@@ -173,7 +176,9 @@ def test_list_connections_combines_inbound_and_outbound(mock_get, monkeypatch):
 @patch("migrate_connections.requests.get")
 def test_get_connection_returns_json(mock_get, monkeypatch):
     monkeypatch.setattr(mc, "SOURCE_ENV_URL", "https://s")
-    g = MagicMock(); g.raise_for_status.return_value = None; g.json.return_value = {"ID": "c"}
+    g = MagicMock()
+    g.raise_for_status.return_value = None
+    g.json.return_value = {"ID": "c"}
     mock_get.return_value = g
     out = mc.get_connection("c")
     assert out["ID"] == "c"
@@ -186,14 +191,16 @@ def test_main_handles_creation_failure(mock_post, monkeypatch):
     monkeypatch.setattr(mc, "TARGET_VAULT_ID", "tv")
     monkeypatch.setattr(mc, "TARGET_ENV_URL", "https://t")
 
-    fail = MagicMock(); fail.status_code = 500; fail.content = b"err"
+    fail = MagicMock()
+    fail.status_code = 500
+    fail.content = b"err"
     mock_post.return_value = fail
 
     sample = (
         "[\n"
         "  {\n"
-        "    \"ID\": \"c1\", \"name\": \"Conn\", \"mode\": \"INGRESS\", \"vaultID\": \"sv\",\n"
-        "    \"routes\": [{\"path\": \"/p\", \"method\": \"GET\", \"invocationURL\": \"u\"}]\n"
+        '    "ID": "c1", "name": "Conn", "mode": "INGRESS", "vaultID": "sv",\n'
+        '    "routes": [{"path": "/p", "method": "GET", "invocationURL": "u"}]\n'
         "  }\n"
         "]"
     )

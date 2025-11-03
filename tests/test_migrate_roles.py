@@ -22,7 +22,8 @@ def test_transform_role_payload_filters_upstream(monkeypatch):
     out = mr.transform_role_payload(source)
     perms = out["roleDefinition"]["permissions"]
     assert "policies.read" in perms and all(
-        p not in perms for p in [
+        p not in perms
+        for p in [
             "accounts.read:upstream",
             "workspaces.read:upstream",
             "vaults.read:upstream",
@@ -59,7 +60,9 @@ def test_main_system_role_path(mock_get, monkeypatch):
 @patch("migrate_roles.requests.post")
 @patch("migrate_roles.requests.get")
 @patch("migrate_roles.migrate_policies")
-def test_main_custom_role_create_and_assign(mock_migrate_policies, mock_get, mock_post, monkeypatch):
+def test_main_custom_role_create_and_assign(
+    mock_migrate_policies, mock_get, mock_post, monkeypatch
+):
     monkeypatch.setattr(mr, "TARGET_VAULT_ID", "tv")
     monkeypatch.setattr(mr, "SOURCE_ENV_URL", "https://s")
     monkeypatch.setattr(mr, "TARGET_ENV_URL", "https://t")
@@ -74,9 +77,7 @@ def test_main_custom_role_create_and_assign(mock_migrate_policies, mock_get, moc
 
     policies_resp = MagicMock()
     policies_resp.raise_for_status.return_value = None
-    policies_resp.json.return_value = {
-        "policies": [{"ID": "p1"}, {"ID": "p2"}]
-    }
+    policies_resp.json.return_value = {"policies": [{"ID": "p1"}, {"ID": "p2"}]}
 
     # get_role -> role_resp, get_role_policies -> policies_resp
     mock_get.side_effect = [role_resp, policies_resp]
@@ -96,6 +97,7 @@ def test_main_custom_role_create_and_assign(mock_migrate_policies, mock_get, moc
     out = mr.main()
     assert out and any(r.get("ID") == "new-role" for r in out)
 
+
 @patch("migrate_roles.requests.post")
 @patch("migrate_roles.requests.get")
 def test_migrate_all_roles_branch(mock_get, mock_post, monkeypatch):
@@ -105,12 +107,22 @@ def test_migrate_all_roles_branch(mock_get, mock_post, monkeypatch):
     monkeypatch.setattr(mr, "SOURCE_ENV_URL", "https://s")
     monkeypatch.setattr(mr, "TARGET_ENV_URL", "https://t")
 
-    list_resp = MagicMock(); list_resp.raise_for_status.return_value = None; list_resp.json.return_value = {"roles": [{"ID": "r1"}]}
-    role_resp = MagicMock(); role_resp.raise_for_status.return_value = None; role_resp.json.return_value = {"role": {"definition": {"name": "Custom", "permissions": ["policies.read"]}}}
-    no_policies = MagicMock(); no_policies.raise_for_status.return_value = None; no_policies.json.return_value = {"policies": []}
+    list_resp = MagicMock()
+    list_resp.raise_for_status.return_value = None
+    list_resp.json.return_value = {"roles": [{"ID": "r1"}]}
+    role_resp = MagicMock()
+    role_resp.raise_for_status.return_value = None
+    role_resp.json.return_value = {
+        "role": {"definition": {"name": "Custom", "permissions": ["policies.read"]}}
+    }
+    no_policies = MagicMock()
+    no_policies.raise_for_status.return_value = None
+    no_policies.json.return_value = {"policies": []}
     mock_get.side_effect = [list_resp, role_resp, no_policies]
 
-    create_post = MagicMock(); create_post.raise_for_status.return_value = None; create_post.json.return_value = {"ID": "new-role"}
+    create_post = MagicMock()
+    create_post.raise_for_status.return_value = None
+    create_post.json.return_value = {"ID": "new-role"}
     mock_post.return_value = create_post
 
     out = mr.main()
@@ -127,8 +139,14 @@ def test_skip_role_creation_if_exists(mock_get, mock_post, monkeypatch):
     monkeypatch.setattr(mr, "SOURCE_ENV_URL", "https://s")
     monkeypatch.setattr(mr, "TARGET_ENV_URL", "https://t")
 
-    role_resp = MagicMock(); role_resp.raise_for_status.return_value = None; role_resp.json.return_value = {"role": {"definition": {"name": "Custom", "permissions": ["policies.read"]}}}
-    exists_resp = MagicMock(); exists_resp.raise_for_status.return_value = None; exists_resp.json.return_value = {"roles": [{"ID": "existing"}]}
+    role_resp = MagicMock()
+    role_resp.raise_for_status.return_value = None
+    role_resp.json.return_value = {
+        "role": {"definition": {"name": "Custom", "permissions": ["policies.read"]}}
+    }
+    exists_resp = MagicMock()
+    exists_resp.raise_for_status.return_value = None
+    exists_resp.json.return_value = {"roles": [{"ID": "existing"}]}
     mock_get.side_effect = [role_resp, exists_resp]
 
     mr.main()
@@ -144,7 +162,10 @@ def test_main_http_error(monkeypatch):
     err = requests.exceptions.HTTPError(response=Resp())
 
     # First call returns a SYSTEM role so role_name is set
-    role_resp = MagicMock(); role_resp.raise_for_status.return_value = None; role_resp.json.return_value = {"role": {"definition": {"name": mr.SYSTEM_ROLES[0]}}}
+    role_resp = MagicMock()
+    role_resp.raise_for_status.return_value = None
+    role_resp.json.return_value = {"role": {"definition": {"name": mr.SYSTEM_ROLES[0]}}}
+
     # get_system_role raises HTTPError
     def raise_err(*args, **kwargs):
         raise err
@@ -179,12 +200,22 @@ def test_custom_role_check_does_not_exist(mock_get, mock_post, monkeypatch):
     monkeypatch.setattr(mr, "SOURCE_ENV_URL", "https://s")
     monkeypatch.setattr(mr, "TARGET_ENV_URL", "https://t")
 
-    role_resp = MagicMock(); role_resp.raise_for_status.return_value = None; role_resp.json.return_value = {"role": {"definition": {"name": "Custom", "permissions": ["policies.read"]}}}
-    no_exist = MagicMock(); no_exist.raise_for_status.return_value = None; no_exist.json.return_value = {"roles": []}
-    policies_empty = MagicMock(); policies_empty.raise_for_status.return_value = None; policies_empty.json.return_value = {"policies": []}
+    role_resp = MagicMock()
+    role_resp.raise_for_status.return_value = None
+    role_resp.json.return_value = {
+        "role": {"definition": {"name": "Custom", "permissions": ["policies.read"]}}
+    }
+    no_exist = MagicMock()
+    no_exist.raise_for_status.return_value = None
+    no_exist.json.return_value = {"roles": []}
+    policies_empty = MagicMock()
+    policies_empty.raise_for_status.return_value = None
+    policies_empty.json.return_value = {"policies": []}
     mock_get.side_effect = [role_resp, no_exist, policies_empty]
 
-    create_post = MagicMock(); create_post.raise_for_status.return_value = None; create_post.json.return_value = {"ID": "new-role"}
+    create_post = MagicMock()
+    create_post.raise_for_status.return_value = None
+    create_post.json.return_value = {"ID": "new-role"}
     mock_post.return_value = create_post
 
     out = mr.main()
@@ -197,6 +228,7 @@ def test_http_error_after_role_name(mock_get, mock_post, monkeypatch):
     # Raise HTTPError during create_role to hit lines 165-166
     class Resp:
         content = b"boom"
+
     err = requests.exceptions.HTTPError(response=Resp())
 
     monkeypatch.setattr(mr, "ROLE_IDS", "['rid']", raising=False)
@@ -204,12 +236,19 @@ def test_http_error_after_role_name(mock_get, mock_post, monkeypatch):
     monkeypatch.setattr(mr, "SOURCE_ENV_URL", "https://s")
     monkeypatch.setattr(mr, "TARGET_ENV_URL", "https://t")
 
-    role_resp = MagicMock(); role_resp.raise_for_status.return_value = None; role_resp.json.return_value = {"role": {"definition": {"name": "Custom", "permissions": ["policies.read"]}}}
-    policies_resp = MagicMock(); policies_resp.raise_for_status.return_value = None; policies_resp.json.return_value = {"policies": []}
+    role_resp = MagicMock()
+    role_resp.raise_for_status.return_value = None
+    role_resp.json.return_value = {
+        "role": {"definition": {"name": "Custom", "permissions": ["policies.read"]}}
+    }
+    policies_resp = MagicMock()
+    policies_resp.raise_for_status.return_value = None
+    policies_resp.json.return_value = {"policies": []}
     mock_get.side_effect = [role_resp, policies_resp]
 
     def raise_err(*args, **kwargs):
         raise err
+
     mock_post.side_effect = raise_err
 
     with pytest.raises(requests.exceptions.HTTPError):
@@ -225,13 +264,21 @@ def test_generic_exception_after_role_name(mock_get, mock_post, monkeypatch):
     monkeypatch.setattr(mr, "SOURCE_ENV_URL", "https://s")
     monkeypatch.setattr(mr, "TARGET_ENV_URL", "https://t")
 
-    role_resp = MagicMock(); role_resp.raise_for_status.return_value = None; role_resp.json.return_value = {"role": {"definition": {"name": "Custom", "permissions": ["policies.read"]}}}
+    role_resp = MagicMock()
+    role_resp.raise_for_status.return_value = None
+    role_resp.json.return_value = {
+        "role": {"definition": {"name": "Custom", "permissions": ["policies.read"]}}
+    }
     mock_get.side_effect = [role_resp]
 
-    create_post = MagicMock(); create_post.raise_for_status.return_value = None; create_post.json.return_value = {"ID": "new-role"}
+    create_post = MagicMock()
+    create_post.raise_for_status.return_value = None
+    create_post.json.return_value = {"ID": "new-role"}
     mock_post.return_value = create_post
 
-    monkeypatch.setattr(mr, "get_role_policies", lambda _id: (_ for _ in ()).throw(Exception("oops")))
+    monkeypatch.setattr(
+        mr, "get_role_policies", lambda _id: (_ for _ in ()).throw(Exception("oops"))
+    )
     with pytest.raises(Exception):
         mr.main()
 
@@ -239,6 +286,7 @@ def test_generic_exception_after_role_name(mock_get, mock_post, monkeypatch):
 def test_run_as_script(monkeypatch):
     # Cover line 172
     import runpy, requests as _requests
+
     monkeypatch.setenv("ROLE_IDS", "[]")
     monkeypatch.setenv("TARGET_VAULT_ID", "tv")
     monkeypatch.setenv("SOURCE_ENV_URL", "https://s")

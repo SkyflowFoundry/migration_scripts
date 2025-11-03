@@ -6,7 +6,9 @@ import update_role as ur
 
 
 def test_transform_role_payload_simple():
-    source = {"role": {"definition": {"name": "N", "displayName": "D", "description": "Desc"}}}
+    source = {
+        "role": {"definition": {"name": "N", "displayName": "D", "description": "Desc"}}
+    }
     target = {"role": {"ID": "rid"}}
     out = ur.transform_role_payload(source, target)
     assert out["ID"] == "rid"
@@ -25,7 +27,9 @@ def test_main_update_metadata(mock_patch, mock_get, mock_post, monkeypatch):
 
     g1 = MagicMock()
     g1.raise_for_status.return_value = None
-    g1.json.return_value = {"role": {"definition": {"name": "N", "displayName": "D", "description": "d"}}}
+    g1.json.return_value = {
+        "role": {"definition": {"name": "N", "displayName": "D", "description": "d"}}
+    }
     g2 = MagicMock()
     g2.raise_for_status.return_value = None
     g2.json.return_value = {"role": {"ID": "t1"}}
@@ -46,7 +50,8 @@ def test_main_assign_policy(mock_post, monkeypatch):
     monkeypatch.setattr(ur, "POLICY_IDS", "['p1','p2']", raising=False)
     monkeypatch.setattr(ur, "TARGET_ROLE_ID", "t1", raising=False)
 
-    r = MagicMock(); r.raise_for_status.return_value = None
+    r = MagicMock()
+    r.raise_for_status.return_value = None
     mock_post.return_value = r
 
     ur.main()
@@ -72,7 +77,15 @@ def test_main_http_error_on_update(monkeypatch):
     monkeypatch.setattr(ur, "UPDATE_ROLE_CRITERIA", "UPDATE_METADATA", raising=False)
     monkeypatch.setattr(ur, "SOURCE_ROLE_ID", "s1", raising=False)
     monkeypatch.setattr(ur, "TARGET_ROLE_ID", "t1", raising=False)
-    monkeypatch.setattr(ur, "get_source_role", lambda _id: {"role": {"definition": {"name": "n", "displayName": "d", "description": "x"}}})
+    monkeypatch.setattr(
+        ur,
+        "get_source_role",
+        lambda _id: {
+            "role": {
+                "definition": {"name": "n", "displayName": "d", "description": "x"}
+            }
+        },
+    )
     monkeypatch.setattr(ur, "get_target_role", lambda _id: {"role": {"ID": "t1"}})
 
     def raise_err(_):
@@ -106,9 +119,19 @@ def test_main_generic_exception(monkeypatch):
     monkeypatch.setattr(ur, "UPDATE_ROLE_CRITERIA", "UPDATE_METADATA", raising=False)
     monkeypatch.setattr(ur, "SOURCE_ROLE_ID", "s1", raising=False)
     monkeypatch.setattr(ur, "TARGET_ROLE_ID", "t1", raising=False)
-    monkeypatch.setattr(ur, "get_source_role", lambda _id: {"role": {"definition": {"name": "n", "displayName": "d", "description": "x"}}})
+    monkeypatch.setattr(
+        ur,
+        "get_source_role",
+        lambda _id: {
+            "role": {
+                "definition": {"name": "n", "displayName": "d", "description": "x"}
+            }
+        },
+    )
     monkeypatch.setattr(ur, "get_target_role", lambda _id: {"role": {"ID": "t1"}})
-    monkeypatch.setattr(ur, "update_role", lambda payload: (_ for _ in ()).throw(Exception("boom")))
+    monkeypatch.setattr(
+        ur, "update_role", lambda payload: (_ for _ in ()).throw(Exception("boom"))
+    )
     with pytest.raises(Exception):
         ur.main()
 
@@ -116,6 +139,7 @@ def test_main_generic_exception(monkeypatch):
 def test_run_as_script(monkeypatch):
     # Cover __main__ guard (line 113)
     import runpy, requests as _requests
+
     monkeypatch.setenv("UPDATE_ROLE_CRITERIA", "ASSIGN_POLICY")
     monkeypatch.setenv("POLICY_IDS", "[]")
     monkeypatch.setenv("TARGET_ROLE_ID", "t1")
