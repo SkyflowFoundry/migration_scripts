@@ -115,6 +115,49 @@ Note: Please note that if all values are provided `config_file` will take the pr
 - The script doesn't migrate service accounts related to connection, this has to be done from Studio.
 - Migration of connections associated with functions is not supported.
 
+### Pipelines Migration
+
+Migrates a pipeline definition from source vault into the target vault. 
+
+##### Parameters:
+- **`source_and_target_env`**: Source and Target Env's.
+- **`pipeline_id`**: Pipeline ID to migrate. Get the pipeline ID from Studio.
+- **`source_datastore_config`**: JSON object that replaces the source datastore configuration. Provide either an `ftpServer` or `s3Bucket` object with the required credentials.
+- **`target_datastore_config`**: JSON object that replaces the destination datastore configuration. Provide either an `ftpServer` or `s3Bucket` object with the required credentials.
+- **`source_account_access_token`**: Access token of the source account.
+- **`target_account_access_token`**: Access token of the target account.
+
+##### Notes:
+- Datastore overrides accept exactly one of `ftpServer` or `s3Bucket`. FTP datastore require `transferProtocol` plus either `plainText` or `encrypted` credentials. S3 datastore must include `name`, `region`, and `assumedRoleARN`.
+- The script validates incompatible overrides (for example, replacing an S3 datastore with FTP).
+
+##### Sample datastore configurations:
+
+```jsonc
+{
+  "ftpServer": {
+    "transferProtocol": "SFTP",
+    "plainText": {
+      "hostname": "sftp.example.com",
+      "port": "22",
+      "username": "pipeline-user",
+      "password": "secret"
+    },
+    "skyflowHosted": false
+  }
+}
+```
+
+```jsonc
+{
+  "s3Bucket": {
+    "name": "pipeline-export-bucket",
+    "region": "us-west-2",
+    "assumedRoleARN": "arn:aws:iam::123456789012:role/pipeline-export-role"
+  }
+}
+```
+
 ## Steps to run the workflows
 
 ### Prerequisites
