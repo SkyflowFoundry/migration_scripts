@@ -170,7 +170,7 @@ def transform_pipeline_payload(
 ) -> Dict[str, Any]:
     """Prepare the payload for the target pipeline."""
     transformed_resource = copy.deepcopy(source_resource)
-    if 'ID' in transformed_resource.keys():
+    if 'ID' in transformed_resource:
         del transformed_resource['ID']      # remove pipeline ID
     transformed_resource["vaultID"] = TARGET_VAULT_ID
     if source_datastore_input:

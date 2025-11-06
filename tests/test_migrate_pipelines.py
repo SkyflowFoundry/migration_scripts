@@ -70,7 +70,10 @@ def test_validate_ftp_server_success(monkeypatch):
         ("not-a-dict", "ftpServer must be an object"),
         ({"plainText": "oops"}, "ftpServer.plainText must be an object"),
         ({"extra": "value"}, "must include non-empty credentials"),
-        ({"transferProtocol": "SFTP", "encrypted": "oops"}, "ftpServer.encrypted must be an object"),
+        (
+            {"transferProtocol": "SFTP", "encrypted": "oops"},
+            "ftpServer.encrypted must be an object",
+        ),
         ({"plainText": {}}, "transferProtocol is required"),
         ({"transferProtocol": "SFTP"}, "plainText or encrypted credentials"),
     ],
@@ -120,9 +123,7 @@ def test_load_datastore_input_variants(monkeypatch):
     with pytest.raises(ValueError, match="must be a JSON object"):
         module.load_datastore_input("[]", "source")
     with pytest.raises(ValueError, match="exactly one"):
-        module.load_datastore_input(
-            '{"ftpServer": {}, "s3Bucket": {}}', "source"
-        )
+        module.load_datastore_input('{"ftpServer": {}, "s3Bucket": {}}', "source")
 
     ftp_override = module.load_datastore_input(
         '{"ftpServer": {"transferProtocol": "FTPS", "plainText": {"hostname": "h", "username": "u"}}}',
@@ -136,7 +137,8 @@ def test_load_datastore_input_variants(monkeypatch):
     }
 
     s3_override = module.load_datastore_input(
-        '{"s3Bucket": {"name": "bucket", "region": "us", "assumedRoleARN": "arn"}}', "target"
+        '{"s3Bucket": {"name": "bucket", "region": "us", "assumedRoleARN": "arn"}}',
+        "target",
     )
     assert s3_override == {
         "s3Bucket": {"name": "bucket", "region": "us", "assumedRoleARN": "arn"}
@@ -177,7 +179,12 @@ def test_replace_datastore_input_fails_on_s3_to_ftp(monkeypatch):
         "dataFormat": "CSV",
         "s3Bucket": {"name": "bucket", "region": "us", "assumedRoleARN": "arn"},
     }
-    override = {"ftpServer": {"transferProtocol": "SFTP", "plainText": {"hostname": "h", "username": "u"}}}
+    override = {
+        "ftpServer": {
+            "transferProtocol": "SFTP",
+            "plainText": {"hostname": "h", "username": "u"},
+        }
+    }
     with pytest.raises(ValueError, match="Cannot override S3 datastore"):
         module.replace_datastore_input(existing, override)
 
@@ -236,7 +243,7 @@ def test_get_pipeline(monkeypatch):
         captured["headers"] = headers
         return SimpleNamespace(
             raise_for_status=lambda: None,
-            json=lambda: {"pipeline":{"ID": "pipeline-1", "name": "Example"}},
+            json=lambda: {"pipeline": {"ID": "pipeline-1", "name": "Example"}},
         )
 
     monkeypatch.setattr(module.requests, "get", fake_get)

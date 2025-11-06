@@ -40,7 +40,7 @@ on:
             }
           }
       source_vault_id:
-        description: "Source Vault ID. Required if migrate_all_connections if checked."
+        description: "Source Vault ID."
         required: false
       pipeline_id:
         description: "PipelineID to be migrated."
