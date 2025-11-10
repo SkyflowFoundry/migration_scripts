@@ -117,7 +117,7 @@ Note: Please note that if all values are provided `config_file` will take the pr
 
 ### Pipelines Migration
 
-Migrates a pipeline definition from source vault into the target vault. 
+Migrates a pipeline definition from the source vault to the target vault. 
 
 ##### Parameters:
 - **`source_and_target_env`**: Source and Target Env's.
