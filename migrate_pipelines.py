@@ -19,6 +19,8 @@ TARGET_DATASTORE_CONFIG = os.getenv("TARGET_DATASTORE_CONFIG")
 
 FTP_ALLOWED_KEYS = {"transferProtocol", "plainText", "encrypted", "skyflowHosted"}
 S3_ALLOWED_KEYS = {"name", "region", "assumedRoleARN"}
+PIPELINE = "pipeline"
+PIPELINES = "pipelines"
 
 SOURCE_ACCOUNT_HEADERS = {
     "X-SKYFLOW-ACCOUNT-ID": SOURCE_ACCOUNT_ID,
@@ -40,7 +42,7 @@ def list_pipelines(vault_id: str) -> List[Dict[str, Any]]:
         headers=SOURCE_ACCOUNT_HEADERS,
     )
     response.raise_for_status()
-    pipelines.extend(response.json()["pipelines"])
+    pipelines.extend(response.json()[PIPELINES])
     return pipelines
 
 def get_pipeline(pipeline_id: str) -> Dict[str, Any]:
@@ -50,7 +52,7 @@ def get_pipeline(pipeline_id: str) -> Dict[str, Any]:
         headers=SOURCE_ACCOUNT_HEADERS,
     )
     response.raise_for_status()
-    return response.json()["pipeline"]
+    return response.json()[PIPELINE]
 
 def create_pipeline(pipeline: Dict[str, Any]) -> requests.Response:
     """Create a pipeline in the target environment."""
@@ -170,8 +172,8 @@ def transform_pipeline_payload(
 ) -> Dict[str, Any]:
     """Prepare the payload for the target pipeline."""
     transformed_resource = copy.deepcopy(source_resource)
-    if 'ID' in transformed_resource:
-        del transformed_resource['ID']      # remove pipeline ID
+    if "ID" in transformed_resource:
+        del transformed_resource["ID"]      # remove pipeline ID
     transformed_resource["vaultID"] = TARGET_VAULT_ID
     if source_datastore_input:
         transformed_resource["source"] = replace_datastore_input(
