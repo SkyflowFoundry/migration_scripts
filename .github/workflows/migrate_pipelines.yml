@@ -1,0 +1,119 @@
+name: pipelines_migration
+
+on:
+  workflow_dispatch:
+    inputs:
+      env_url:
+        description: "Select source and target env's"
+        type: choice
+        default: "Source: SANDBOX, Target: PRODUCTION"
+        options:
+          - "Source: SANDBOX, Target: PRODUCTION"
+          - "Source: SANDBOX, Target: SANDBOX"
+          - "Source: PRODUCTION, Target: PRODUCTION"
+          - "Source: PRODUCTION, Target: SANDBOX"
+      source_datastore_config:
+        description: "Source datastore JSON. Provide either an ftpServer or s3Bucket object."
+        required: true
+        default: |
+          {
+            "ftpServer": {
+              "transferProtocol": "FTPS",
+              "plainText": {
+                "hostname": "",
+                "port": "",
+                "username": "",
+                "password": "",
+              },
+              "skyflowHosted": false
+            }
+          }
+      target_datastore_config:
+        description: "Destination datastore JSON. Provide either an ftpServer or s3Bucket object."
+        required: true
+        default: |
+          {
+            "s3Bucket": {
+              "name": "",
+              "region": "",
+              "assumedRoleARN": ""
+            }
+          }
+      source_vault_id:
+        description: "Source Vault ID."
+        required: false
+      pipeline_id:
+        description: "PipelineID to be migrated."
+        required: false
+        default: ""
+      target_vault_id:
+        description: "Target Vault ID"
+        required: true
+      source_account_access_token:
+        description: "Access token of the Source Account. (Not required, if config file is selected)"
+        required: false
+      target_account_access_token:
+        description: "Access token of the Target Account"
+        required: true
+      source_account_id:
+        description: "Source Account ID. If not provided, will use the repository variable"
+        required: false
+      target_account_id:
+        description: "Target Account ID. If not provided, will use the repository variable"
+        required: false
+
+
+jobs:
+  execute-pipelines-migration-script:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Parse and map environment URLs
+        id: map_envs
+        shell: bash
+        run: |
+          input="${{ github.event.inputs.env_url }}"
+
+          source_name=$(echo "$input" | sed -n 's/Source: \([^,]*\),.*/\1/p' | xargs)
+          target_name=$(echo "$input" | sed -n 's/.*Target: \(.*\)/\1/p' | xargs)
+
+          get_env_url() {
+            case "$1" in
+              SANDBOX) echo "https://manage.skyflowapis-preview.com" ;;
+              PRODUCTION) echo "https://manage.skyflowapis.com" ;;
+              *) echo "Invalid environment: $1" >&2; exit 1 ;;
+            esac
+          }
+
+          # Resolve URLs
+          source_url=$(get_env_url "$source_name")
+          target_url=$(get_env_url "$target_name")
+
+          echo "source_url=$source_url" >> $GITHUB_OUTPUT
+          echo "target_url=$target_url" >> $GITHUB_OUTPUT
+
+      - name: Run Python script
+        env:
+          PIPELINE_ID: ${{ github.event.inputs.pipeline_id }}
+          SOURCE_DATASTORE_CONFIG: ${{ github.event.inputs.source_datastore_config }}
+          TARGET_DATASTORE_CONFIG: ${{ github.event.inputs.target_datastore_config }}
+          SOURCE_VAULT_ID: ${{ github.event.inputs.source_vault_id }}
+          TARGET_VAULT_ID: ${{ github.event.inputs.target_vault_id }}
+          SOURCE_ACCOUNT_AUTH: ${{ github.event.inputs.source_account_access_token }}
+          TARGET_ACCOUNT_AUTH: ${{ github.event.inputs.target_account_access_token }}
+          SOURCE_ACCOUNT_ID: ${{ github.event.inputs.source_account_id != '' && github.event.inputs.source_account_id || vars.SOURCE_ACCOUNT_ID }}
+          TARGET_ACCOUNT_ID: ${{ github.event.inputs.target_account_id != '' && github.event.inputs.target_account_id || vars.TARGET_ACCOUNT_ID }}
+          SOURCE_ENV_URL: ${{ steps.map_envs.outputs.source_url }}
+          TARGET_ENV_URL: ${{ steps.map_envs.outputs.target_url }}
+        run: python3 migrate_pipelines.py
