@@ -16,41 +16,21 @@ on:
         description: "Source datastore JSON. Provide either an ftpServer or s3Bucket object."
         required: true
         default: |
-          {
-            "ftpServer": {
-              "transferProtocol": "FTPS",
-              "plainText": {
-                "hostname": "",
-                "port": "",
-                "username": "",
-                "password": "",
-              },
-              "skyflowHosted": false
-            }
-          }
+          {"ftpServer":{"transferProtocol": "FTPS","plainText": {"hostname": "","port": "","username": "","password": ""},"skyflowHosted": false}}
       target_datastore_config:
         description: "Destination datastore JSON. Provide either an ftpServer or s3Bucket object."
         required: true
         default: |
-          {
-            "s3Bucket": {
-              "name": "",
-              "region": "",
-              "assumedRoleARN": ""
-            }
-          }
-      source_vault_id:
-        description: "Source Vault ID."
-        required: false
+          {"s3Bucket": {"name": "","region": "","assumedRoleARN": ""}}
       pipeline_id:
         description: "PipelineID to be migrated."
-        required: false
+        required: true
         default: ""
       target_vault_id:
         description: "Target Vault ID"
         required: true
       source_account_access_token:
-        description: "Access token of the Source Account. (Not required, if config file is selected)"
+        description: "Access token of the Source Account"
         required: false
       target_account_access_token:
         description: "Access token of the Target Account"
@@ -108,7 +88,6 @@ jobs:
           PIPELINE_ID: ${{ github.event.inputs.pipeline_id }}
           SOURCE_DATASTORE_CONFIG: ${{ github.event.inputs.source_datastore_config }}
           TARGET_DATASTORE_CONFIG: ${{ github.event.inputs.target_datastore_config }}
-          SOURCE_VAULT_ID: ${{ github.event.inputs.source_vault_id }}
           TARGET_VAULT_ID: ${{ github.event.inputs.target_vault_id }}
           SOURCE_ACCOUNT_AUTH: ${{ github.event.inputs.source_account_access_token }}
           TARGET_ACCOUNT_AUTH: ${{ github.event.inputs.target_account_access_token }}

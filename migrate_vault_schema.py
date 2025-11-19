@@ -26,18 +26,20 @@ TARGET_ACCOUNT_HEADERS = {
     "Authorization": f"Bearer {TARGET_ACCOUNT_AUTH}",
     "Content-Type": "application/json",
 }
-
 def get_vault_details(vaultID: str):
+    """Return the vault metadata and schema"""
     response = requests.get(f"{SOURCE_ENV_URL}/v1/vaults/{vaultID}", headers=SOURCE_ACCOUNT_HEADERS)
     response.raise_for_status()
     return response.json()
 
 def create_vault(create_vault_request_payload):
+    """Creates a vault"""
     response = requests.post(f"{TARGET_ENV_URL}/v1/vaults", json=create_vault_request_payload, headers=TARGET_ACCOUNT_HEADERS)
     response.raise_for_status()
     return response.json()
 
 def transform_payload(vault_details):
+    """Transforms source vault payload to target payload."""
     create_vault_payload = {
         "name": VAULT_NAME if VAULT_NAME else f"UntitledVault{random.randint(0,1000)}" if VAULT_SCHEMA_CONFIG else vault_details["name"],
         "description": VAULT_DESCRIPTION if VAULT_DESCRIPTION else "" if VAULT_SCHEMA_CONFIG else vault_details["description"],
@@ -50,6 +52,7 @@ def transform_payload(vault_details):
     return create_vault_payload
     
 def main():
+    """Migrates vault schema"""
     try:
         print("-- Initializing Vault migration --")
         if VAULT_SCHEMA_CONFIG is not None and VAULT_SCHEMA_CONFIG == "config_file":

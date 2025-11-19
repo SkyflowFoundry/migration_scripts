@@ -32,6 +32,7 @@ TARGET_ACCOUNT_HEADERS = {
 
 
 def get_role(role_id):
+    """Fetch a single role definition from the source account."""
     response = requests.get(
         f"{SOURCE_ENV_URL}/v1/roles/{role_id}", headers=SOURCE_ACCOUNT_HEADERS
     )
@@ -39,6 +40,7 @@ def get_role(role_id):
     return response.json()
 
 def get_system_role(role_name):
+    """Return a system role present in the target vault."""
     response = requests.get(
         f"{TARGET_ENV_URL}/v1/roles?name={role_name}&resource.type=VAULT&resource.ID={TARGET_VAULT_ID}", headers=TARGET_ACCOUNT_HEADERS
     )
@@ -46,6 +48,7 @@ def get_system_role(role_name):
     return response.json()    
 
 def create_role(role):
+    """Create a custom role in the target vault."""
     response = requests.post(
         f"{TARGET_ENV_URL}/v1/roles", json=role, headers=TARGET_ACCOUNT_HEADERS
     )
@@ -54,6 +57,7 @@ def create_role(role):
 
 
 def get_role_policies(role_id):
+    """List all policies attached to the given role."""
     response = requests.get(
         f"{SOURCE_ENV_URL}/v1/roles/{role_id}/policies", headers=SOURCE_ACCOUNT_HEADERS
     )
@@ -62,6 +66,7 @@ def get_role_policies(role_id):
 
 
 def get_role_by_role_name(role_name):
+    """Search the target vault for an existing custom role by name."""
     response = requests.get(
         f"{TARGET_ENV_URL}/v1/roles?name={role_name}&resource.type=VAULT&resource.ID={TARGET_VAULT_ID}",
         headers=TARGET_ACCOUNT_HEADERS,
@@ -71,6 +76,7 @@ def get_role_by_role_name(role_name):
 
 
 def assign_policy_to_role(policy_ids, role_id: list):
+    """Assign the provided policies to the role."""
     for policy_id in policy_ids:
         assign_request = {"ID": policy_id, "roleIDs": role_id}
         response = requests.post(
@@ -82,6 +88,7 @@ def assign_policy_to_role(policy_ids, role_id: list):
     # return response.json()
 
 def list_all_roles() -> list:
+    """Lists custom roles"""
     response = requests.get(
         f"{SOURCE_ENV_URL}/v1/roles?type=CUSTOM&resource.ID={SOURCE_VAULT_ID}&resource.type=VAULT",
         headers=SOURCE_ACCOUNT_HEADERS,
@@ -91,6 +98,7 @@ def list_all_roles() -> list:
 
 
 def transform_role_payload(source_resource):
+    """Transforms source role payload to target payload."""
     transformed_resource = {}
     transformed_resource["roleDefinition"] = source_resource["role"]["definition"]
     permissions: list = source_resource["role"]["definition"]["permissions"]
@@ -104,11 +112,13 @@ def transform_role_payload(source_resource):
             "vaults.read:upstream",
         ]
     ]
+    # remove upstream read permissions that are implicitly granted in the target account
     transformed_resource["roleDefinition"]["permissions"] = new_permissions
     transformed_resource["resource"] = {"ID": TARGET_VAULT_ID, "type": "VAULT"}
     return transformed_resource
 
 def main(role_ids=None):
+    """Migrates roles and their associated policies."""
     try:
         print("-- Initializing Roles migration --")
         should_enable_custom_role_check = SKIP_ROLE_CREATION_IF_ROLE_EXISTS

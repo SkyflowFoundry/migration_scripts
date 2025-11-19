@@ -27,6 +27,7 @@ TARGET_ACCOUNT_HEADERS = {
 
 
 def list_service_account_roles(service_account_id):
+    """Return every role assigned to the given service account."""
     response = requests.get(
         f"{SOURCE_ENV_URL}/v1/members/{service_account_id}/roles?member.type=SERVICE_ACCOUNT",
         headers=SOURCE_ACCOUNT_HEADERS,
@@ -36,6 +37,7 @@ def list_service_account_roles(service_account_id):
 
 
 def get_service_account(service_account_id):
+    """Fetch a service account definition from the source account."""
     response = requests.get(
         f"{SOURCE_ENV_URL}/v1/serviceAccounts/{service_account_id}",
         headers=SOURCE_ACCOUNT_HEADERS,
@@ -45,6 +47,7 @@ def get_service_account(service_account_id):
 
 
 def create_service_account(service_account):
+    """Create the supplied service account in the target account."""
     response = requests.post(
         f"{TARGET_ENV_URL}/v1/serviceAccounts",
         json=service_account,
@@ -55,6 +58,7 @@ def create_service_account(service_account):
 
 
 def assign_roles_to_service_account(role_ids, service_account_id):
+    """Attach the specified roles to the new service account."""
     for role_id in role_ids:
         assign_request = {
             "ID": role_id,
@@ -69,15 +73,17 @@ def assign_roles_to_service_account(role_ids, service_account_id):
 
 
 def transform_service_account_payload(source_resource):
+    """Strip source-only metadata before creating the service account."""
     transformed_resource = source_resource
     # transformed_resource["resource"] = {"ID": TARGET_VAULT_ID, "type": "VAULT"} // not require due to SA flattening change
-    del transformed_resource["serviceAccount"]["ID"]
+    del transformed_resource["serviceAccount"]["ID"]  # IDs are regenerated per account
     del transformed_resource["serviceAccount"]["namespace"]
     del transformed_resource["serviceAccount"]["BasicAudit"]
     return transformed_resource
 
 
 def main(service_accounts_ids=None):
+    """Migrates service accounts and associated roles."""
     try:
         print("-- Initializing Service accounts migration --")
         service_accounts_ids = (

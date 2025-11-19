@@ -16,6 +16,7 @@ SOURCE_ACCOUNT_HEADERS = {
 
 
 def list_all_vault_custom_roles() -> list:
+    """Return all custom roles of the source vault."""
     response = requests.get(
         f"{SOURCE_ENV_URL}/v1/roles?type=CUSTOM&resource.ID={SOURCE_VAULT_ID}&resource.type=VAULT",
         headers=SOURCE_ACCOUNT_HEADERS,
@@ -25,6 +26,7 @@ def list_all_vault_custom_roles() -> list:
 
 
 def main():
+    """Migrates all the custom roles and policies"""
     try:
         print(f"-- Fetching roles for the vault {SOURCE_VAULT_ID} --")
         roles = list_all_vault_custom_roles()

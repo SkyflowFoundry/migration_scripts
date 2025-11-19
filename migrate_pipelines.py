@@ -4,9 +4,10 @@ import os
 import requests
 from typing import Any, Dict, List, Optional
 
+from dotenv import load_dotenv
+load_dotenv()
 
 PIPELINE_ID = os.getenv("PIPELINE_ID")
-SOURCE_VAULT_ID = os.getenv("SOURCE_VAULT_ID")
 TARGET_VAULT_ID = os.getenv("TARGET_VAULT_ID")
 SOURCE_ACCOUNT_ID = os.getenv("SOURCE_ACCOUNT_ID")
 TARGET_ACCOUNT_ID = os.getenv("TARGET_ACCOUNT_ID")
@@ -35,7 +36,7 @@ TARGET_ACCOUNT_HEADERS = {
 }
 
 def list_pipelines(vault_id: str) -> List[Dict[str, Any]]:
-    """Return all pipelines in the supplied vault."""
+    """Lists Pipelines"""
     pipelines = []
     response = requests.get(
         f"{SOURCE_ENV_URL}/v1/pipelines?vaultID={vault_id}",
@@ -46,7 +47,7 @@ def list_pipelines(vault_id: str) -> List[Dict[str, Any]]:
     return pipelines
 
 def get_pipeline(pipeline_id: str) -> Dict[str, Any]:
-    """Fetch a single pipeline definition from the source environment."""
+    """Fetches a single pipeline"""
     response = requests.get(
         f"{SOURCE_ENV_URL}/v1/pipelines/{pipeline_id}",
         headers=SOURCE_ACCOUNT_HEADERS,
@@ -55,7 +56,7 @@ def get_pipeline(pipeline_id: str) -> Dict[str, Any]:
     return response.json()[PIPELINE]
 
 def create_pipeline(pipeline: Dict[str, Any]) -> requests.Response:
-    """Create a pipeline in the target environment."""
+    """Creates a pipeline"""
     response = requests.post(
         f"{TARGET_ENV_URL}/v1/pipelines",
         json=pipeline,
@@ -170,7 +171,7 @@ def transform_pipeline_payload(
     source_datastore_input: Optional[Dict[str, Any]] = None,
     target_datastore_input: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
-    """Prepare the payload for the target pipeline."""
+    """Transforms source pipeline payload to target payload."""
     transformed_resource = copy.deepcopy(source_resource)
     if "ID" in transformed_resource:
         del transformed_resource["ID"]      # remove pipeline ID
@@ -187,7 +188,7 @@ def transform_pipeline_payload(
 
 
 def main(pipeline_id: str) -> None:
-    """pipeline migration"""
+    """Migrates pipeline"""
     try:
         print("-- Initiating Pipelines migration --")
         source_datastore_input = load_datastore_input(SOURCE_DATASTORE_CONFIG, "source")

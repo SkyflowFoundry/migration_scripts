@@ -26,6 +26,7 @@ TARGET_ACCOUNT_HEADERS = {
 
 
 def get_policy(policy_id):
+    """Fetches a policy"""
     response = requests.get(
         f"{SOURCE_ENV_URL}/v1/policies/{policy_id}", headers=SOURCE_ACCOUNT_HEADERS
     )
@@ -34,6 +35,7 @@ def get_policy(policy_id):
 
 
 def create_policy(policy_data):
+    """Creates a policy"""
     response = requests.post(
         f"{TARGET_ENV_URL}/v1/policies", json=policy_data, headers=TARGET_ACCOUNT_HEADERS
     )
@@ -42,6 +44,7 @@ def create_policy(policy_data):
 
 
 def transform_policy_payload(source_resource):
+    """Transforms source policy payload to target payload."""
     transformed_resource = source_resource["policy"]
     transformed_resource["resource"] = {"ID": TARGET_VAULT_ID, "type": "VAULT"}
     policy_rules = transformed_resource["rules"]
@@ -95,6 +98,7 @@ def transform_policy_payload(source_resource):
 
 
 def main(policy_ids=None):
+    """Migrates policies"""
     try:
         policy_ids = policy_ids if policy_ids else ast.literal_eval(POLICY_IDS)
         policies_created = []
