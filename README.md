@@ -122,7 +122,7 @@ Migrates a pipeline from the source vault to the target vault.
 ##### Parameters:
 - **`source_and_target_env`**: Source and Target Env's.
 - **`pipeline_id`**: Pipeline ID to migrate.
-- - **`target_vault_id`**: Target Vault ID.
+- **`target_vault_id`**: Target Vault ID.
 - **`source_datastore_config`**: JSON object that replaces the source datastore configuration. Provide either an `ftpServer` or `s3Bucket` object with the required credentials.
 - **`target_datastore_config`**: JSON object that replaces the destination datastore configuration. Provide either an `ftpServer` or `s3Bucket` object with the required credentials.
 - **`source_account_access_token`**: Access token of the source account.
