@@ -29,6 +29,7 @@ TARGET_ACCOUNT_HEADERS = {
 
 
 def list_connections(vault_id):
+    """Lists inbound + outbound connections for a vault."""
     connections = []
     response = requests.get(
         f"{SOURCE_ENV_URL}/v1/gateway/outboundRoutes?vaultID={vault_id}",
@@ -45,6 +46,7 @@ def list_connections(vault_id):
     return connections
 
 def get_connection(connection_id):
+    """Fetches a single connection"""
     # /inboundRoutes can also fetch outbound connection details
     response = requests.get(
         f"{SOURCE_ENV_URL}/v1/gateway/inboundRoutes/{connection_id}",
@@ -54,6 +56,7 @@ def get_connection(connection_id):
     return response.json()
 
 def create_connection(connection):
+    """Creates connection"""
     route = "outboundRoutes" if connection["mode"] == "EGRESS" else "inboundRoutes"
     response = requests.post(
         f"{TARGET_ENV_URL}/v1/gateway/{route}",
@@ -64,8 +67,10 @@ def create_connection(connection):
 
 
 def transform_connection_payload(source_resource):
+    """Transforms source connection payload to target payload."""
     transformed_resource = source_resource
     transformed_resource["vaultID"] = TARGET_VAULT_ID
+    # drop basic audit and invocation URL
     if "BasicAudit" in transformed_resource.keys():
         del transformed_resource["BasicAudit"]
     for route in transformed_resource["routes"]:
@@ -74,6 +79,7 @@ def transform_connection_payload(source_resource):
 
 
 def main(connection_ids=None):
+    """Migrates connections"""
     try:
         print("-- Initiating Connections migration --")
         connections = []
