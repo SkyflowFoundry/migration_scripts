@@ -22,8 +22,8 @@ TARGET_ACCOUNT_HEADERS = {
     "Content-Type": "application/json",
 }
 
-def get_vault_details(vaultID: str):
-    response = requests.get(f"{SOURCE_ENV_URL}/v1/vaults/{vaultID}", headers=SOURCE_ACCOUNT_HEADERS)
+def get_vault_details(vault_id: str):
+    response = requests.get(f"{SOURCE_ENV_URL}/v1/vaults/{vault_id}", headers=SOURCE_ACCOUNT_HEADERS)
     response.raise_for_status()
     return response.json()
 

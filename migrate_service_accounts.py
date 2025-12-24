@@ -124,10 +124,10 @@ def main(service_accounts_ids=None):
         print(
             f"-- migrate_service_accounts HTTP error: {http_err.response.content.decode()} --"
         )
-        raise http_err
+        exit(1)
     except Exception as err:
         print(f"-- migrate_service_accounts other error: {err} --")
-        raise err
+        exit(1)
 
 
 if __name__ == "__main__":

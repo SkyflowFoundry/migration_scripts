@@ -111,10 +111,10 @@ def main(policy_ids=None):
         return policies_created
     except requests.exceptions.HTTPError as http_err:
         print(f'-- migrate_policies HTTP error: {http_err.response.content.decode()} --')
-        raise http_err
+        exit(1)
     except Exception as err:
         print(f"-- migrate_policies error: {err} --")
-        raise err
+        exit(1)
 
 
 if __name__ == "__main__":

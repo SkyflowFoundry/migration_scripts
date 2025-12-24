@@ -128,10 +128,10 @@ def main():
         print(
             f"-- update_service_account HTTP error: {http_err.response.content.decode()} --"
         )
-        raise http_err
+        exit(1)
     except Exception as err:
         print(f"-- update_service_account error: {err} --")
-        raise err
+        exit(1)
 
 
 if __name__ == "__main__":

@@ -107,8 +107,9 @@ def test_main_http_error(monkeypatch):
 
     monkeypatch.setattr(msa, "SERVICE_ACCOUNT_IDS", "['sa1']", raising=False)
     monkeypatch.setattr(msa, "get_service_account", raise_err)
-    with pytest.raises(requests.exceptions.HTTPError):
+    with pytest.raises(SystemExit) as excinfo:
         msa.main()
+    assert excinfo.value.code == 1
 
 
 def test_generic_exception_branch(monkeypatch):
@@ -132,8 +133,9 @@ def test_generic_exception_branch(monkeypatch):
         "create_service_account",
         lambda x: (_ for _ in ()).throw(Exception("boom")),
     )
-    with pytest.raises(Exception):
+    with pytest.raises(SystemExit) as excinfo:
         msa.main()
+    assert excinfo.value.code == 1
 
 
 def test_run_as_script(monkeypatch):

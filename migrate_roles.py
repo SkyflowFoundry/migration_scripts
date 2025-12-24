@@ -151,7 +151,7 @@ def main(role_ids=None):
                         roles_created.append({"ID" : role_response["roles"][0]["ID"]})
                     else:
                         print("-- Role does not exist --") 
-                if(should_create_role):
+                if should_create_role:
                     role_payload = transform_role_payload(role_info)
                     print(f"-- Creating role: {role_name} --")
                     new_role = create_role(role_payload)
@@ -160,7 +160,7 @@ def main(role_ids=None):
                     role_policies = get_role_policies(role_id)
                     policy_ids = [policy["ID"] for policy in role_policies["policies"]]
                     no_of_policies = len(policy_ids)
-                    if(no_of_policies == 0):
+                    if no_of_policies == 0:
                         print('-- No policies found for the given role --')
                     else:
                         print(f"-- Working on policies migration. No. of policies found for given role: {no_of_policies} --")
@@ -173,10 +173,10 @@ def main(role_ids=None):
     except requests.exceptions.HTTPError as http_err:
         print(f'-- Role creation failed for {role_name if role_name else ""}, ID: {role_id}. --')
         print(f'-- migrate_roles HTTP error: {http_err.response.content.decode()} --')
-        raise http_err
+        exit(1)
     except Exception as err:
         print(f'-- migrate_roles error: {err} --')
-        raise err
+        exit(1)
 
 if __name__ == "__main__":
     main()
