@@ -103,10 +103,10 @@ def main():
         print(f"-- Role {TARGET_ROLE_ID} updated successfully. --")
     except requests.exceptions.HTTPError as http_err:
         print(f"-- update_role HTTP error: {http_err.response.content.decode()} --")
-        raise http_err
+        exit(1)
     except Exception as err:
         print(f"-- update_role error: {err} --")
-        raise err
+        exit(1)
 
 
 if __name__ == "__main__":

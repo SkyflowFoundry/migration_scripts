@@ -104,8 +104,9 @@ def test_main_handles_http_error(mock_get, monkeypatch):
     monkeypatch.setattr(mc, "SOURCE_ENV_URL", "https://s")
     mock_get.side_effect = raise_err
 
-    with pytest.raises(requests.exceptions.HTTPError):
+    with pytest.raises(SystemExit) as excinfo:
         mc.main()
+    assert excinfo.value.code == 1
 
 
 def test_main_migrate_all_with_source_calls_list(monkeypatch):
@@ -132,8 +133,9 @@ def test_main_other_exception_branch(monkeypatch):
         raise Exception("boom")
 
     monkeypatch.setattr(mc, "get_connection", boom)
-    with pytest.raises(Exception):
+    with pytest.raises(SystemExit) as excinfo:
         mc.main()
+    assert excinfo.value.code == 1
 
 
 def test_run_as_script_config_file(monkeypatch):

@@ -112,8 +112,9 @@ def test_main_http_error_on_update(monkeypatch):
         raise err
 
     monkeypatch.setattr(usa, "update_service_account", raise_err)
-    with pytest.raises(requests.exceptions.HTTPError):
+    with pytest.raises(SystemExit) as excinfo:
         usa.main()
+    assert excinfo.value.code == 1
 
 
 def test_main_update_metadata_missing_inputs(monkeypatch):
@@ -164,8 +165,9 @@ def test_main_generic_exception(monkeypatch):
         "update_service_account",
         lambda payload: (_ for _ in ()).throw(Exception("boom")),
     )
-    with pytest.raises(Exception):
+    with pytest.raises(SystemExit) as excinfo:
         usa.main()
+    assert excinfo.value.code == 1
 
 
 def test_run_as_script(monkeypatch):

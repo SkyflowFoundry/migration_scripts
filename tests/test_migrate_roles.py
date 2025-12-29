@@ -175,8 +175,9 @@ def test_main_http_error(monkeypatch):
     monkeypatch.setattr(mr, "TARGET_ENV_URL", "https://t")
     monkeypatch.setattr(mr, "get_role", lambda _id: role_resp.json())
     monkeypatch.setattr(mr, "get_system_role", raise_err)
-    with pytest.raises(requests.exceptions.HTTPError):
+    with pytest.raises(SystemExit) as excinfo:
         mr.main()
+    assert excinfo.value.code == 1
 
 
 @patch("migrate_roles.requests.post")
@@ -186,8 +187,9 @@ def test_migrate_all_missing_source_prints(mock_get, mock_post, monkeypatch):
     monkeypatch.setattr(mr, "SOURCE_VAULT_ID", None, raising=False)
     monkeypatch.setattr(mr, "ROLE_IDS", "[]", raising=False)
     # Function prints a message then later attempts to iterate None; assert it errors predictably
-    with pytest.raises(TypeError):
+    with pytest.raises(SystemExit) as excinfo:
         mr.main()
+    assert excinfo.value.code == 1
 
 
 @patch("migrate_roles.requests.post")
@@ -251,8 +253,9 @@ def test_http_error_after_role_name(mock_get, mock_post, monkeypatch):
 
     mock_post.side_effect = raise_err
 
-    with pytest.raises(requests.exceptions.HTTPError):
+    with pytest.raises(SystemExit) as excinfo:
         mr.main()
+    assert excinfo.value.code == 1
 
 
 @patch("migrate_roles.requests.post")
@@ -279,8 +282,9 @@ def test_generic_exception_after_role_name(mock_get, mock_post, monkeypatch):
     monkeypatch.setattr(
         mr, "get_role_policies", lambda _id: (_ for _ in ()).throw(Exception("oops"))
     )
-    with pytest.raises(Exception):
+    with pytest.raises(SystemExit) as excinfo:
         mr.main()
+    assert excinfo.value.code == 1
 
 
 def test_run_as_script(monkeypatch):

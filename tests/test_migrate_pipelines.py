@@ -361,8 +361,9 @@ def test_main_http_error_branch(monkeypatch, capsys):
 
     monkeypatch.setattr(module, "get_pipeline", raise_http_error)
 
-    with pytest.raises(requests.exceptions.HTTPError):
+    with pytest.raises(SystemExit) as excinfo:
         module.main("pipeline-http-error")
+    assert excinfo.value.code == 1
 
     stdout = capsys.readouterr().out
     assert "HTTP error" in stdout
@@ -378,8 +379,9 @@ def test_main_other_exception_branch(monkeypatch, capsys):
 
     monkeypatch.setattr(module, "create_pipeline", boom)
 
-    with pytest.raises(RuntimeError):
+    with pytest.raises(SystemExit) as excinfo:
         module.main("pipeline-other-error")
+    assert excinfo.value.code == 1
 
     stdout = capsys.readouterr().out
     assert "other error" in stdout

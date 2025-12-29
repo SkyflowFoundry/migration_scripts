@@ -63,8 +63,9 @@ def test_main_http_error(monkeypatch):
     monkeypatch.setattr(up, "TARGET_POLICY_ID", "t1", raising=False)
     monkeypatch.setattr(up, "get_source_policy", raise_err)
 
-    with pytest.raises(requests.exceptions.HTTPError):
+    with pytest.raises(SystemExit) as excinfo:
         up.main()
+    assert excinfo.value.code == 1
 
 
 def test_main_missing_inputs(monkeypatch):
@@ -95,8 +96,9 @@ def test_main_generic_exception(monkeypatch):
         "transform_policy_payload",
         lambda s, t: (_ for _ in ()).throw(Exception("boom")),
     )
-    with pytest.raises(Exception):
+    with pytest.raises(SystemExit) as excinfo:
         up.main()
+    assert excinfo.value.code == 1
 
 
 def test_run_as_script(monkeypatch):

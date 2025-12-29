@@ -110,8 +110,9 @@ def test_main_http_error(monkeypatch):
         raise err
 
     monkeypatch.setattr(mp, "get_policy", raise_err)
-    with pytest.raises(requests.exceptions.HTTPError):
+    with pytest.raises(SystemExit) as excinfo:
         mp.main(policy_ids=["p1"])
+    assert excinfo.value.code == 1
 
 
 def test_main_generic_exception(monkeypatch):
@@ -121,8 +122,9 @@ def test_main_generic_exception(monkeypatch):
         "transform_policy_payload",
         lambda _: (_ for _ in ()).throw(Exception("boom")),
     )
-    with pytest.raises(Exception):
+    with pytest.raises(SystemExit) as excinfo:
         mp.main(policy_ids=["p1"])
+    assert excinfo.value.code == 1
 
 
 def test_run_as_script(monkeypatch):
