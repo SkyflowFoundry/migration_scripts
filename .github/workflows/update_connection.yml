@@ -14,13 +14,13 @@ on:
           - "Source: PRODUCTION, Target: SANDBOX"
       source_connection_id:
         description: "Source Connection ID"
-        required: false
+        required: true
       target_connection_id:
         description: "Target Connection ID"
         required: true
       source_account_access_token:
         description: "Access token of the Source Account"
-        required: false
+        required: true
       target_account_access_token:
         description: "Access token of the Target Account"
         required: true
