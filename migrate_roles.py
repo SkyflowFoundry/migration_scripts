@@ -130,7 +130,7 @@ def main(role_ids=None):
             else:
                 print("-- Please provide valid input. Source vault ID is required to migrate all roles --")
         else:
-            role_ids = ast.literal_eval(ROLE_IDS)
+            role_ids = role_ids if role_ids else ast.literal_eval(ROLE_IDS)
         roles_created = []
         for index, role_id in enumerate(role_ids):
             role_info = get_role(role_id)
